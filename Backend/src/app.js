@@ -7,6 +7,7 @@ import express from "express";
 import { ErrorHandlerMiddleware } from "./middlewares/errorHandlerMiddleware.js";
 
 // Routers imports
+import userRouter from "../src/features/users/routes/user.routes.js";
 
 // Creating server
 const app = express();
@@ -19,6 +20,9 @@ app.use(express.json());
 app.get("/", (req, res, next) => {
   res.send("Welcome to the Blog app :)");
 });
+
+// Routes
+app.use("/api/user", userRouter);
 
 // Handling invalid routes
 app.use((req, res, next) => {
