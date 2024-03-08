@@ -3,11 +3,13 @@ import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { loginAsync } from '../../Redux/reducers/usersReducer';
 
+// Login form
 const Login = () => {
     const dispatch = useDispatch();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+    // Handle login
     const handleLogin = (e) => {
         e.preventDefault();
         dispatch(loginAsync({ email, password }));

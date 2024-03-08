@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { createBlogAsync, updateBlogAsync } from '../../Redux/reducers/blogsReducer';
 import { useDispatch } from 'react-redux';
 
+// Post form componenet
 const PostForm = () => {
     const dispatch = useDispatch();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
 
+    // Submit handler
     const handleSubmit = (e) => {
         e.preventDefault();
         const blogData = { title, content };

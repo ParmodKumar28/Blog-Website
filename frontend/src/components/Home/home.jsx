@@ -4,6 +4,7 @@ import { blogsSelector, fetchBlogsAsync } from '../../Redux/reducers/blogsReduce
 import { useDispatch, useSelector } from 'react-redux';
 import { Audio } from 'react-loader-spinner';
 
+// Home page componenet here
 const Home = () => {
     const dispatch = useDispatch();
     const { blogs, isLoading } = useSelector(blogsSelector);

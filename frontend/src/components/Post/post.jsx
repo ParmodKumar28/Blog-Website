@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchBlogByIdAsync, deleteBlogAsync, blogsSelector } from '../../Redux/reducers/blogsReducer';
 
+// Blog detail page componenet here
 const BlogDetail = () => {
     const { id } = useParams();
     const dispatch = useDispatch();
