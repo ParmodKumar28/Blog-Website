@@ -6,6 +6,7 @@ import "./dotenv.js";
 import express from "express";
 import { ErrorHandlerMiddleware } from "./middlewares/errorHandlerMiddleware.js";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 // Routers imports
 import userRouter from "../src/features/users/routes/user.routes.js";
@@ -13,6 +14,14 @@ import blogRouter from "../src/features/blogs/routes/blog.routes.js";
 
 // Creating server
 const app = express();
+
+// Setting up cors
+app.use(
+  cors({
+    origin: "http://localhost:3000", // Replace with your frontend origin
+    credentials: true, // Allow credentials (cookies)
+  })
+);
 
 // Cookie parser
 app.use(cookieParser());
