@@ -70,7 +70,7 @@ export const updateBlogHandler = async (req, res, next) => {
     }
 
     // Update blog
-    const updatedBlog = await updateBlog(blogId, { title, content });
+    const updatedBlog = await updateBlog(blogId, req.body);
 
     if (!updatedBlog) {
       return next(new ErrorHandler(404, "Blog not found"));

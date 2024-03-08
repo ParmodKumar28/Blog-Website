@@ -1,5 +1,6 @@
 // Blog repository is here for database communication's
 import ErrorHandler from "../../../utils/ErrorHandler.js";
+import User from "../../users/model/user.schema.js";
 import Blog from "./blog.schema.js";
 
 // Create new blog

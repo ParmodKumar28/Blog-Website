@@ -5,6 +5,7 @@ import "./dotenv.js";
 // Imports
 import express from "express";
 import { ErrorHandlerMiddleware } from "./middlewares/errorHandlerMiddleware.js";
+import cookieParser from "cookie-parser";
 
 // Routers imports
 import userRouter from "../src/features/users/routes/user.routes.js";
@@ -12,6 +13,9 @@ import blogRouter from "../src/features/blogs/routes/blog.routes.js";
 
 // Creating server
 const app = express();
+
+// Cookie parser
+app.use(cookieParser());
 
 // Body parsing
 app.use(express.urlencoded({ extended: true }));

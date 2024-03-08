@@ -1,8 +1,9 @@
-// Middleware to verify token here
+// Middleware to verify token
 import jwt from "jsonwebtoken";
 import ErrorHandler from "../utils/ErrorHandler.js";
+import User from "../features/users/model/user.schema.js";
 
-const verifyToken = (req, res, next) => {
+const verifyToken = async (req, res, next) => {
   // Get token from cookies
   const token = req.cookies.token;
 
@@ -16,7 +17,17 @@ const verifyToken = (req, res, next) => {
   try {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+
+    // Retrieve user from the database using the decoded user ID
+    const user = await User.findById(decoded.userId); // Assuming userId is the field in the token
+
+    // Check if user exists
+    if (!user) {
+      return next(new ErrorHandler(401, "User not found"));
+    }
+
+    // Attach the user object to the request
+    req.user = user;
     next();
   } catch (error) {
     console.error(error);
