@@ -6,7 +6,14 @@ import Blog from "./blog.schema.js";
 export const createBlog = async (blogData) => {
   try {
     const blog = new Blog(blogData);
-    return await blog.save();
+    const newBlog = await blog.save();
+
+    // Update user's blogs array
+    await User.findByIdAndUpdate(blogData.user, {
+      $push: { blogs: newBlog._id },
+    });
+
+    return newBlog;
   } catch (error) {
     throw new ErrorHandler(400, "Error creating blog");
   }
@@ -42,7 +49,14 @@ export const updateBlog = async (blogId, blogData) => {
 // Delete blog
 export const deleteBlog = async (blogId) => {
   try {
-    return await Blog.findByIdAndDelete(blogId);
+    const deletedBlog = await Blog.findByIdAndDelete(blogId);
+
+    // Remove deleted blog from user's blogs array
+    await User.findByIdAndUpdate(deletedBlog.user, {
+      $pull: { blogs: deletedBlog._id },
+    });
+
+    return deletedBlog;
   } catch (error) {
     throw new ErrorHandler(400, "Error deleting blog");
   }
