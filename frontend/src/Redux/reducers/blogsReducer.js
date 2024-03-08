@@ -20,7 +20,6 @@ export const fetchBlogsAsync = createAsyncThunk(
       if (response.statusText === "OK") {
         return response.data;
       }
-      console.log(response.data);
     } catch (error) {
       console.log(error);
       toast.error("An error occurred while fetching blogs.");
@@ -86,10 +85,30 @@ export const deleteBlogAsync = createAsyncThunk(
   }
 );
 
+// Async Thunk to fetch a blog by ID
+export const fetchBlogByIdAsync = createAsyncThunk(
+  "blogs/fetchBlogById",
+  async (blogId) => {
+    try {
+      // Sending request to the server
+      const response = await axios.get(`${BASE_URL_BLOGS}/${blogId}`);
+      // If response is ok then return response.data
+      if (response.statusText === "OK") {
+        return response.data;
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("An error occurred while fetching the blog.");
+      throw error;
+    }
+  }
+);
+
 // Initial State
 const INITIAL_STATE = {
   blogs: [],
   isLoading: false,
+  blog: {},
 };
 
 // Slice
@@ -153,6 +172,13 @@ const blogSlice = createSlice({
       toast.success("Blog deleted successfully.");
     });
     // DeleteBlogAsync thunk extra reducers end here
+
+    // FetchBlogByIdAsync thunk extra reducers start here
+    // When fulfilled
+    builder.addCase(fetchBlogByIdAsync.fulfilled, (state, action) => {
+      state.blog = action.payload;
+    });
+    // FetchBlogByIdAsync thunk extra reducers end here
   },
 });
 
@@ -162,4 +188,4 @@ export const blogsReducer = blogSlice.reducer;
 // Extract actions from the slice
 
 // State from the reducer and exporting state
-export const blogsSelector = (state) => state.blogReducer;
+export const blogsSelector = (state) => state.blogsReducer;

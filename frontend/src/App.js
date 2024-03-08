@@ -1,22 +1,17 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  RouterProvider,
-  createBrowserRouter,
-} from "react-router-dom";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Navbar from "./components/navbar/navbar";
 import Home from "./components/Home/home";
 import PostForm from "./components/Post Form/postForm";
 import Login from "./components/login/login";
 import PostDetail from "./components/Post/post";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Provider } from "react-redux";
 import store from "./Redux/store";
 import Page404 from "./components/Page 404/Page404";
 import Signup from "./components/sign-up/signup";
+import ProtectedRoute from "./components/Protected Routes/ProtectedRoute";
 
 const App = () => {
   // Creating router
@@ -38,6 +33,10 @@ const App = () => {
         {
           path: "/signup",
           element: <Signup />,
+        },
+        {
+          path: "/posts/:id",
+          element: <PostDetail />,
         },
       ],
     },

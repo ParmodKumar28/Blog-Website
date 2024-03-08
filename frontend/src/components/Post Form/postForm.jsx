@@ -2,23 +2,21 @@ import React, { useState } from 'react';
 import { createBlogAsync, updateBlogAsync } from '../../Redux/reducers/blogsReducer';
 import { useDispatch } from 'react-redux';
 
-const PostForm = ({ onSubmit, initialValues }) => {
+const PostForm = () => {
     const dispatch = useDispatch();
-    const [title, setTitle] = useState(initialValues.title || '');
-    const [content, setContent] = useState(initialValues.content || '');
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
         const blogData = { title, content };
-        if (initialValues._id) {
-            dispatch(updateBlogAsync({ blogId: initialValues._id, blogData }));
-        } else {
-            dispatch(createBlogAsync(blogData));
-        }
+        dispatch(createBlogAsync(blogData));
+        setTitle("");
+        setContent("");
     };
 
     return (
-        <form onSubmit={(e) => handleSubmit(e)} className="container mx-auto">
+        <form onSubmit={(e) => handleSubmit(e)} className="container mx-auto w-96 border-2 p-5 mt-10">
             <div className="mb-4">
                 <label htmlFor="title" className="block text-sm font-semibold text-gray-600">Title</label>
                 <input
