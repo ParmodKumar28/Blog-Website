@@ -8,6 +8,7 @@ import { ErrorHandlerMiddleware } from "./middlewares/errorHandlerMiddleware.js"
 
 // Routers imports
 import userRouter from "../src/features/users/routes/user.routes.js";
+import blogRouter from "../src/features/blogs/routes/blog.routes.js";
 
 // Creating server
 const app = express();
@@ -23,6 +24,7 @@ app.get("/", (req, res, next) => {
 
 // Routes
 app.use("/api/user", userRouter);
+app.use("/api/blog", blogRouter);
 
 // Handling invalid routes
 app.use((req, res, next) => {

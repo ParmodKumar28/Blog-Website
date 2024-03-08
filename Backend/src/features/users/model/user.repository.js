@@ -1,4 +1,5 @@
 // User repository file to communicate with database
+import ErrorHandler from "../../../utils/ErrorHandler.js";
 import User from "./user.schema.js";
 
 // Creating user in the database
@@ -7,7 +8,7 @@ export const createUser = async (userData) => {
     const user = new User(userData);
     return await user.save();
   } catch (error) {
-    throw new Error("Error creating user");
+    throw new ErrorHandler(400, "Error creating user");
   }
 };
 
@@ -16,6 +17,6 @@ export const findUserByEmail = async (email) => {
   try {
     return await User.findOne({ email });
   } catch (error) {
-    throw new Error("Error finding user by email");
+    throw new ErrorHandler(400, "Error finding user by email");
   }
 };

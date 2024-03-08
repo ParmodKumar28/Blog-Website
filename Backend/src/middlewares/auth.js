@@ -1,14 +1,16 @@
-// Middleware to check if token is valid or not here
-import jwt from 'jsonwebtoken';
-import ErrorHandler from '../utils/ErrorHandler.js';
+// Middleware to verify token here
+import jwt from "jsonwebtoken";
+import ErrorHandler from "../utils/ErrorHandler.js";
 
 const verifyToken = (req, res, next) => {
   // Get token from cookies
-  const token = req.cookies;
+  const token = req.cookies.token;
 
   // Check if token exists
   if (!token) {
-    return next(new ErrorHandler(401, 'Authorization denied. No token provided'));
+    return next(
+      new ErrorHandler(401, "Authorization denied. No token provided")
+    );
   }
 
   try {
@@ -18,8 +20,9 @@ const verifyToken = (req, res, next) => {
     next();
   } catch (error) {
     console.error(error);
-    next(new ErrorHandler(401, 'Invalid token'));
+    next(new ErrorHandler(401, "Invalid token"));
   }
 };
 
+// Exporting middleware
 export default verifyToken;
