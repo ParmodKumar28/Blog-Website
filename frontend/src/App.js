@@ -28,7 +28,11 @@ const App = () => {
         },
         {
           path: "/posts/new",
-          element: <PostForm />,
+          element: (
+            <ProtectedRoute>
+              <PostForm />
+            </ProtectedRoute>
+          ),
         },
         {
           path: "/signup",

@@ -119,7 +119,7 @@ const usersSlice = createSlice({
       state.token = action.payload.token;
       state.signedUser = action.payload.user;
       state.isSignIn = true;
-      Cookies.set("token", action.payload.token); // Storing fresh token to cooke
+      Cookies.set("token", state.token); // Storing fresh token to cookie
       Cookies.set("isSignIn", state.isSignIn); // Storing isSignIn to cookie
       toast.success("Login Successful!");
     });

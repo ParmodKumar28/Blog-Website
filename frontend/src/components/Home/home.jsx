@@ -29,7 +29,7 @@ const Home = () => {
             ) : (
                 <div>
                     {blogs.length === 0 ? (
-                        <p>No blogs found.</p> // Show message if no blogs are available
+                        <p className='text-2xl text-center mt-10 text-sky-500'>No blogs found.</p> // Show message if no blogs are available
                     ) : (
                         <>
                             <h1 className="text-3xl font-bold mt-8 mb-4 text-center">All Blog Posts</h1>

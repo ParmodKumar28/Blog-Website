@@ -66,7 +66,7 @@ export const loginUser = async (req, res, next) => {
       maxAge: 3600000, // 1 hour in milliseconds
     });
 
-    res.json({ message: "Login successful" });
+    res.json({ message: "Login successful", token, user });
   } catch (error) {
     return next(new ErrorHandler(400, error));
   }
