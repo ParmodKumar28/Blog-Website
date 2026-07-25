@@ -1,5 +1,3 @@
-import React from 'react';
-
 // Single Grid Card Skeleton
 export const BlogCardSkeleton = () => {
   return (

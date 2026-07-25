@@ -6,16 +6,16 @@ import PostForm from "./components/Post Form/postForm";
 import Login from "./components/login/login";
 import PostDetail from "./components/Post/post";
 import Profile from "./components/profile/profile";
+import Page404 from "./components/Page 404/Page404";
+import Signup from "./components/sign-up/signup";
+import ProtectedRoute from "./components/Protected Routes/ProtectedRoute";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Provider } from "react-redux";
 import store from "./Redux/store";
-import Page404 from "./components/Page 404/Page404";
-import Signup from "./components/sign-up/signup";
-import ProtectedRoute from "./components/Protected Routes/ProtectedRoute";
 
 const App = () => {
-  // Creating router
+  // Direct Component Route Mapping
   const router = createBrowserRouter([
     {
       path: "/",
@@ -62,15 +62,12 @@ const App = () => {
       ],
     },
   ]);
+
   return (
-    <>
-      {/* Providing store to all routes */}
-      <Provider store={store}>
-        <RouterProvider router={router} />
-      </Provider>
-      {/* Notification container */}
+    <Provider store={store}>
+      <RouterProvider router={router} />
       <ToastContainer />
-    </>
+    </Provider>
   );
 };
 
