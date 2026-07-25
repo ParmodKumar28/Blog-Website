@@ -30,10 +30,10 @@ const Signup = () => {
       <div className="max-w-md w-full bg-white p-8 sm:p-10 rounded-2xl border border-zinc-200 shadow-xs space-y-6">
         <div className="text-center space-y-1">
           <div className="inline-flex w-9 h-9 rounded-lg bg-zinc-900 text-white items-center justify-center text-xs font-bold mb-2">
-            db
+            bv
           </div>
           <h2 className="text-2xl font-bold text-zinc-900 font-serif-editorial">
-            Join DevBlog
+            Join Blogverse
           </h2>
           <p className="text-xs text-zinc-500 font-medium">
             Create an author account to start writing & publishing.

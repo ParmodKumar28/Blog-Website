@@ -101,12 +101,19 @@ const usersSlice = createSlice({
     builder.addCase(loginAsync.pending, (state) => { state.loginLoading = true; });
     builder.addCase(loginAsync.fulfilled, (state, action) => {
       state.loginLoading = false;
-      state.token = action.payload.token;
-      state.signedUser = action.payload.user;
-      state.isSignIn = true;
-      state.sessionRestored = true;
-      localStorage.setItem("token", action.payload.token);
-      toast.success("Login Successful!");
+      if (action.payload && action.payload.token) {
+        state.token = action.payload.token;
+        state.signedUser = action.payload.user;
+        state.isSignIn = true;
+        state.sessionRestored = true;
+        localStorage.setItem("token", action.payload.token);
+        toast.success("Login Successful!");
+      } else {
+        state.token = "";
+        state.signedUser = null;
+        state.isSignIn = false;
+        toast.error("Invalid response from server. Please check your API URL configuration.");
+      }
     });
     builder.addCase(loginAsync.rejected, (state) => { state.loginLoading = false; });
 
@@ -122,9 +129,16 @@ const usersSlice = createSlice({
 
     // Restore session via /me — called silently on app mount
     builder.addCase(fetchCurrentUserAsync.fulfilled, (state, action) => {
-      state.signedUser = action.payload.user;
-      state.isSignIn = true;
-      state.sessionRestored = true;
+      if (action.payload && action.payload.user) {
+        state.signedUser = action.payload.user;
+        state.isSignIn = true;
+        state.sessionRestored = true;
+      } else {
+        state.signedUser = null;
+        state.isSignIn = false;
+        state.sessionRestored = true;
+        localStorage.removeItem("token");
+      }
     });
     builder.addCase(fetchCurrentUserAsync.rejected, (state) => {
       // No valid session — clear everything

@@ -34,10 +34,10 @@ const Home = () => {
         <div className="max-w-6xl mx-auto">
           <div className="max-w-2xl space-y-3">
             <span className="text-xs font-bold uppercase tracking-widest text-zinc-400">
-              The Developer Journal
+              Blogverse
             </span>
             <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-zinc-900 font-serif-editorial leading-tight">
-              Engineering, Design & Thoughtful Perspectives
+              Your Universe of Ideas
             </h1>
             <p className="text-zinc-500 text-base sm:text-lg font-normal leading-relaxed">
               Curated articles, practical tutorials, and insights written by builders and engineers.

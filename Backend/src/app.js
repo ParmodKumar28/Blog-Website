@@ -28,7 +28,7 @@ app.use("/uploads", express.static(path.join(__dirname, "../../uploads")));
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:8000",
-  process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, "") : null,
 ].filter(Boolean);
 
 app.use(
