@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { usersSelector, logoutAsync } from '../../Redux/reducers/usersReducer';
-import { PenSquare, LogOut, LogIn, BookOpen, User } from 'lucide-react';
+import { PenSquare, LogOut, LogIn } from 'lucide-react';
 
 const Navbar = () => {
   const dispatch = useDispatch();
