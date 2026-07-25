@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { blogsSelector, fetchBlogsAsync } from '../../Redux/reducers/blogsReducer';
 import { usersSelector } from '../../Redux/reducers/usersReducer';
 import { useDispatch, useSelector } from 'react-redux';
+import { FeaturedHeroSkeleton, BlogCardSkeleton } from '../common/Skeleton';
 
 const CATEGORIES = ["All", "Tech", "Design", "AI", "Tutorials", "Lifestyle"];
 
@@ -142,12 +143,22 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Main Content Area */}
+      {/* Main Content Area with Skeleton Loading State */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-8 h-8 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin"></div>
-            <p className="mt-3 text-xs text-zinc-500 font-medium">Loading publication...</p>
+          <div className="space-y-12">
+            {/* Featured Spotlight Skeleton */}
+            <FeaturedHeroSkeleton />
+
+            {/* Grid Skeletons */}
+            <div className="space-y-6">
+              <div className="w-36 h-6 bg-zinc-200/80 rounded-md border-b border-zinc-200 pb-2 animate-pulse" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3, 4, 5, 6].map((num) => (
+                  <BlogCardSkeleton key={num} />
+                ))}
+              </div>
+            </div>
           </div>
         ) : filteredBlogs.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-2xl border border-zinc-200 p-8">

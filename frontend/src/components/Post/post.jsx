@@ -6,6 +6,7 @@ import { usersSelector } from '../../Redux/reducers/usersReducer';
 import ConfirmModal from '../common/ConfirmModal';
 import FormattedContent from '../common/FormattedContent';
 import { getBlogCoverImage, getAuthorName, getAccurateReadTime, getFormattedCategory, getFormattedDate } from '../Home/home';
+import { ArticleDetailSkeleton } from '../common/Skeleton';
 import { toast } from 'react-toastify';
 import { ArrowLeft, Clock, Trash2, Edit3 } from 'lucide-react';
 
@@ -38,12 +39,7 @@ const BlogDetail = () => {
   };
 
   if (isLoading || !blog) {
-    return (
-      <div className="min-h-[calc(100vh-4rem)] bg-white flex flex-col items-center justify-center">
-        <div className="w-8 h-8 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-3 text-xs text-zinc-500 font-medium">Loading article...</p>
-      </div>
-    );
+    return <ArticleDetailSkeleton />;
   }
 
   const coverImg = getBlogCoverImage(blog);

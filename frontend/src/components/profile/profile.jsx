@@ -5,6 +5,7 @@ import { blogsSelector, fetchBlogsAsync, deleteBlogAsync } from '../../Redux/red
 import { usersSelector } from '../../Redux/reducers/usersReducer';
 import { getBlogCoverImage, getAuthorName, getAccurateReadTime, getFormattedCategory, getFormattedDate } from '../Home/home';
 import ConfirmModal from '../common/ConfirmModal';
+import { ProfileSkeleton } from '../common/Skeleton';
 import { toast } from 'react-toastify';
 import { User, Mail, BookOpen, Clock, Trash2, ArrowRight, PenSquare, Edit3 } from 'lucide-react';
 
@@ -31,6 +32,10 @@ const Profile = () => {
 
   if (!isSignIn || !signedUser) {
     return null;
+  }
+
+  if (isLoading) {
+    return <ProfileSkeleton />;
   }
 
   // Filter blogs created by current author
@@ -116,12 +121,7 @@ const Profile = () => {
             </h2>
           </div>
 
-          {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-16">
-              <div className="w-8 h-8 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin"></div>
-              <p className="mt-3 text-xs text-zinc-500 font-medium">Loading author stories...</p>
-            </div>
-          ) : userBlogs.length === 0 ? (
+          {userBlogs.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-2xl border border-zinc-200 p-8 space-y-3">
               <div className="w-12 h-12 rounded-full bg-zinc-100 text-zinc-400 flex items-center justify-center mx-auto text-xl">
                 ✍️
