@@ -5,6 +5,7 @@ import { fetchBlogByIdAsync, deleteBlogAsync, blogsSelector } from '../../Redux/
 import { usersSelector } from '../../Redux/reducers/usersReducer';
 import ConfirmModal from '../common/ConfirmModal';
 import FormattedContent from '../common/FormattedContent';
+import { getBlogCoverImage } from '../Home/home';
 import { toast } from 'react-toastify';
 import { ArrowLeft, Clock, Trash2 } from 'lucide-react';
 
@@ -45,7 +46,7 @@ const BlogDetail = () => {
     );
   }
 
-  const coverImg = blog.imageUrl || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80';
+  const coverImg = getBlogCoverImage(blog);
   const authorName = blog.user?.username || 'DevBlog Author';
   const formattedDate = blog.createdAt
     ? new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -117,9 +118,6 @@ const BlogDetail = () => {
               src={coverImg}
               alt={blog.title}
               className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.src = 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80';
-              }}
             />
           </div>
         )}

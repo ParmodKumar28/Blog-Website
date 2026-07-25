@@ -1,12 +1,46 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { blogsSelector, fetchBlogsAsync } from '../../Redux/reducers/blogsReducer';
 import { useDispatch, useSelector } from 'react-redux';
 
 const CATEGORIES = ["All", "Tech", "Design", "AI", "Tutorials", "Lifestyle"];
 
+const CATEGORY_COVERS = {
+  Tech: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800"><defs><linearGradient id="t" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%230f172a"/><stop offset="100%" stop-color="%231e293b"/></linearGradient></defs><rect width="1200" height="800" fill="url(%23t)"/><circle cx="600" cy="400" r="260" fill="none" stroke="%233b82f6" stroke-width="4" opacity="0.4"/><circle cx="600" cy="400" r="160" fill="none" stroke="%2360a5fa" stroke-width="3" opacity="0.6"/><line x1="200" y1="400" x2="1000" y2="400" stroke="%23475569" stroke-width="2" opacity="0.5"/><line x1="600" y1="100" x2="600" y2="700" stroke="%23475569" stroke-width="2" opacity="0.5"/></svg>`,
+  
+  Design: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800"><rect width="1200" height="800" fill="%231e1e24"/><path d="M0,133 H1200 M0,266 H1200 M0,400 H1200 M0,533 H1200 M0,666 H1200" stroke="%232e2e38" stroke-width="3"/><path d="M200,0 V800 M400,0 V800 M600,0 V800 M800,0 V800 M1000,0 V800" stroke="%232e2e38" stroke-width="3"/><rect x="380" y="240" width="440" height="320" rx="16" fill="%232563eb" opacity="0.85"/></svg>`,
+
+  AI: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800"><defs><linearGradient id="a" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%2318181b"/><stop offset="100%" stop-color="%2327272a"/></linearGradient></defs><rect width="1200" height="800" fill="url(%23a)"/><polygon points="600,180 840,520 360,520" fill="none" stroke="%23a855f7" stroke-width="6" opacity="0.7"/><circle cx="600" cy="180" r="22" fill="%23c084fc"/><circle cx="840" cy="520" r="22" fill="%23c084fc"/><circle cx="360" cy="520" r="22" fill="%23c084fc"/></svg>`,
+
+  Tutorials: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800"><rect width="1200" height="800" fill="%2309090b"/><path d="M360,280 L220,400 L360,520" stroke="%2310b981" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M840,280 L980,400 L840,520" stroke="%2310b981" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="650" y1="240" x2="550" y2="560" stroke="%2310b981" stroke-width="14" stroke-linecap="round"/></svg>`,
+
+  Lifestyle: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800"><rect width="1200" height="800" fill="%23f4f4f5"/><rect x="250" y="180" width="700" height="440" rx="20" fill="%23ffffff" stroke="%23e4e4e7" stroke-width="6"/><line x1="250" y1="540" x2="950" y2="540" stroke="%23e4e4e7" stroke-width="4"/><circle cx="600" cy="360" r="48" fill="%2318181b"/></svg>`,
+
+  General: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800"><rect width="1200" height="800" fill="%23fafafa"/><circle cx="600" cy="400" r="200" fill="%2318181b"/><circle cx="600" cy="400" r="130" fill="%23ffffff"/></svg>`
+};
+
+const DEFAULT_COVERS_ARRAY = Object.values(CATEGORY_COVERS);
+
+export const getBlogCoverImage = (blog, index = 0) => {
+  if (blog?.imageUrl && blog.imageUrl.trim() !== "") {
+    return blog.imageUrl;
+  }
+  const cat = blog?.category;
+  if (cat && CATEGORY_COVERS[cat]) {
+    return CATEGORY_COVERS[cat];
+  }
+  const str = blog?._id || blog?.title || `${index}`;
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+  }
+  const pos = Math.abs(hash) % DEFAULT_COVERS_ARRAY.length;
+  return DEFAULT_COVERS_ARRAY[pos];
+};
+
 const Home = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { blogs, isLoading } = useSelector(blogsSelector);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
@@ -81,18 +115,18 @@ const Home = () => {
         ) : (
           <div className="space-y-12">
 
-            {/* Featured Hero Story (Only when showing 'All' or when there's a featured item) */}
+            {/* Featured Hero Story (WHOLE CARD CLICKABLE) */}
             {featuredBlog && (
-              <article className="bg-white rounded-2xl border border-zinc-200/80 overflow-hidden shadow-xs hover:border-zinc-300 transition group">
+              <article
+                onClick={() => navigate(`/posts/${featuredBlog._id}`)}
+                className="bg-white rounded-2xl border border-zinc-200/80 overflow-hidden shadow-xs hover:border-zinc-400 hover:shadow-md transition duration-200 group cursor-pointer"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-0">
                   <div className="md:col-span-7 aspect-[16/10] md:aspect-auto overflow-hidden bg-zinc-100">
                     <img
-                      src={featuredBlog.imageUrl || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80'}
+                      src={getBlogCoverImage(featuredBlog, 0)}
                       alt={featuredBlog.title}
                       className="w-full h-full object-cover group-hover:scale-102 transition duration-500"
-                      onError={(e) => {
-                        e.target.src = 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80';
-                      }}
                     />
                   </div>
                   <div className="md:col-span-5 p-6 sm:p-8 flex flex-col justify-between">
@@ -106,10 +140,10 @@ const Home = () => {
                         </span>
                       </div>
                       <h2 className="text-2xl sm:text-3xl font-bold text-zinc-900 font-serif-editorial leading-tight group-hover:text-blue-600 transition">
-                        <Link to={`/posts/${featuredBlog._id}`}>{featuredBlog.title}</Link>
+                        {featuredBlog.title}
                       </h2>
                       <p className="text-zinc-600 text-sm leading-relaxed line-clamp-3 font-normal">
-                        {featuredBlog.subtitle || (featuredBlog.content ? featuredBlog.content.substring(0, 140) + '...' : '')}
+                        {featuredBlog.subtitle || (featuredBlog.content ? featuredBlog.content.replace(/<[^>]*>/g, '').substring(0, 140) + '...' : '')}
                       </p>
                     </div>
 
@@ -122,33 +156,31 @@ const Home = () => {
                           {featuredBlog.user?.username || 'DevBlog Author'}
                         </span>
                       </div>
-                      <Link
-                        to={`/posts/${featuredBlog._id}`}
-                        className="text-xs font-semibold text-zinc-900 hover:underline flex items-center gap-1"
-                      >
+                      <span className="text-xs font-semibold text-zinc-900 group-hover:translate-x-1 transition flex items-center gap-1">
                         Read Article <span>→</span>
-                      </Link>
+                      </span>
                     </div>
                   </div>
                 </div>
               </article>
             )}
 
-            {/* Secondary Articles Grid */}
+            {/* Secondary Articles Grid (WHOLE CARDS CLICKABLE) */}
             {secondaryBlogs.length > 0 && (
               <div className="space-y-6">
                 <h3 className="text-lg font-bold text-zinc-900 font-serif-editorial border-b border-zinc-200 pb-3">
                   {selectedCategory === 'All' ? 'More Stories' : `${selectedCategory} Articles`}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {secondaryBlogs.map((blog) => {
-                    const coverImg = blog.imageUrl || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80';
+                  {secondaryBlogs.map((blog, idx) => {
+                    const coverImg = getBlogCoverImage(blog, idx + 1);
                     const authorName = blog.user?.username || 'DevBlog Author';
 
                     return (
                       <article
                         key={blog._id}
-                        className="editorial-card rounded-xl overflow-hidden flex flex-col justify-between group"
+                        onClick={() => navigate(`/posts/${blog._id}`)}
+                        className="editorial-card rounded-xl overflow-hidden flex flex-col justify-between group cursor-pointer hover:border-zinc-400 hover:shadow-md transition duration-200"
                       >
                         <div>
                           <div className="aspect-[16/9] overflow-hidden bg-zinc-100 relative">
@@ -156,9 +188,6 @@ const Home = () => {
                               src={coverImg}
                               alt={blog.title}
                               className="w-full h-full object-cover group-hover:scale-103 transition duration-300"
-                              onError={(e) => {
-                                e.target.src = 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80';
-                              }}
                             />
                             <div className="absolute top-3 left-3">
                               <span className="tag-pill bg-white/90 backdrop-blur-xs border-zinc-200">
@@ -169,10 +198,10 @@ const Home = () => {
 
                           <div className="p-5">
                             <h4 className="text-lg font-bold text-zinc-900 font-serif-editorial leading-snug line-clamp-2 mb-2 group-hover:text-blue-600 transition">
-                              <Link to={`/posts/${blog._id}`}>{blog.title}</Link>
+                              {blog.title}
                             </h4>
                             <p className="text-zinc-600 text-xs leading-relaxed line-clamp-2">
-                              {blog.subtitle || (blog.content ? blog.content.substring(0, 100) + '...' : '')}
+                              {blog.subtitle || (blog.content ? blog.content.replace(/<[^>]*>/g, '').substring(0, 100) + '...' : '')}
                             </p>
                           </div>
                         </div>
