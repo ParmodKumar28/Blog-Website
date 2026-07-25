@@ -23,7 +23,9 @@ export const createBlog = async (blogData) => {
 // Get all blogs
 export const getAllBlogs = async () => {
   try {
-    return await Blog.find();
+    return await Blog.find()
+      .populate("user", "username email")
+      .sort({ createdAt: -1 });
   } catch (error) {
     throw new ErrorHandler(400, "Error fetching blogs");
   }
@@ -32,7 +34,7 @@ export const getAllBlogs = async () => {
 // Get blog by ID
 export const getBlogById = async (blogId) => {
   try {
-    return await Blog.findById(blogId);
+    return await Blog.findById(blogId).populate("user", "username email");
   } catch (error) {
     throw new ErrorHandler(400, "Error fetching blog by ID");
   }

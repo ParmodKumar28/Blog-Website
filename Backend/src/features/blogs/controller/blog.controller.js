@@ -11,18 +11,26 @@ import {
 // Create blog
 export const createNewBlog = async (req, res, next) => {
   try {
-    const { title, content } = req.body;
+    const { title, subtitle, content, imageUrl, category, readTime } = req.body;
     const userId = req.user._id; // Extract user ID from request
 
     // Check if title, content, and user ID are provided
     if (!title || !content || !userId) {
       return next(
-        new ErrorHandler(400, "Enter title, content, and user ID properly!")
+        new ErrorHandler(400, "Title and content are required!")
       );
     }
 
-    // Create new blog
-    const newBlog = await createBlog({ title, content, user: userId });
+    // Create new blog with expanded fields
+    const newBlog = await createBlog({
+      title,
+      subtitle: subtitle || "",
+      content,
+      imageUrl: imageUrl || "",
+      category: category || "General",
+      readTime: readTime || "3 min read",
+      user: userId,
+    });
 
     res
       .status(201)
