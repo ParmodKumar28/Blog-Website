@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { usersSelector, logoutAsync } from '../../Redux/reducers/usersReducer';
-import { PenSquare, LogOut, LogIn, BookOpen } from 'lucide-react';
+import { PenSquare, LogOut, LogIn, BookOpen, User } from 'lucide-react';
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -61,17 +61,30 @@ const Navbar = () => {
 
               {isSignIn ? (
                 <div className="flex items-center gap-2.5 pl-3 border-l border-zinc-200">
-                  <div className="flex items-center gap-2 bg-zinc-50 px-2.5 py-1 rounded-lg border border-zinc-200/80">
-                    <div className="w-5 h-5 rounded-full bg-zinc-900 text-white font-bold flex items-center justify-center text-[10px]">
+                  {/* Clickable Profile Badge */}
+                  <Link
+                    to="/profile"
+                    className={`flex items-center gap-2 px-2.5 py-1 rounded-lg border transition ${
+                      isActive('/profile')
+                        ? 'bg-zinc-900 text-white border-zinc-900 shadow-xs'
+                        : 'bg-zinc-50 text-zinc-800 border-zinc-200/80 hover:bg-zinc-100'
+                    }`}
+                    title="View Profile & Dashboard"
+                  >
+                    <div className={`w-5 h-5 rounded-full font-bold flex items-center justify-center text-[10px] ${
+                      isActive('/profile') ? 'bg-white text-zinc-900' : 'bg-zinc-900 text-white'
+                    }`}>
                       {signedUser?.username ? signedUser.username.charAt(0).toUpperCase() : 'U'}
                     </div>
-                    <span className="hidden sm:inline text-xs font-semibold text-zinc-800">
+                    <span className="hidden sm:inline text-xs font-semibold">
                       {signedUser?.username || 'Author'}
                     </span>
-                  </div>
+                  </Link>
+
                   <button
                     onClick={handleLogout}
                     className="inline-flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-rose-600 px-2 py-1 rounded hover:bg-rose-50 transition"
+                    title="Sign Out"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Logout</span>

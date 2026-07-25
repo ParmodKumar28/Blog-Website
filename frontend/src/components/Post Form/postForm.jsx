@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { createBlogAsync, blogsSelector } from '../../Redux/reducers/blogsReducer';
+import React, { useState, useEffect } from 'react';
+import { createBlogAsync, updateBlogAsync, fetchBlogByIdAsync, blogsSelector } from '../../Redux/reducers/blogsReducer';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Send, Sparkles } from 'lucide-react';
+import { Send, Sparkles, Edit3 } from 'lucide-react';
 import FormattedContent from '../common/FormattedContent';
 import ProRichTextEditor from '../common/ProRichTextEditor';
 
@@ -61,9 +61,13 @@ export const CATEGORY_IMAGE_CATALOG = {
 const CATEGORIES = ["Tech", "Design", "AI", "Tutorials", "Lifestyle", "General"];
 
 const PostForm = () => {
+  const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoading } = useSelector(blogsSelector);
+
+  const { blog, isLoading } = useSelector(blogsSelector);
+
+  const isEditMode = Boolean(id);
 
   const [title, setTitle] = useState('');
   const [subtitle, setSubtitle] = useState('');
@@ -72,13 +76,32 @@ const PostForm = () => {
   const [content, setContent] = useState('');
   const [activeTab, setActiveTab] = useState('edit');
 
+  // Fetch blog data if in Edit mode
+  useEffect(() => {
+    if (isEditMode && id) {
+      dispatch(fetchBlogByIdAsync(id));
+    }
+  }, [dispatch, id, isEditMode]);
+
+  // Pre-populate fields when editing
+  useEffect(() => {
+    if (isEditMode && blog) {
+      setTitle(blog.title || '');
+      setSubtitle(blog.subtitle || '');
+      setCategory(blog.category || 'Tech');
+      setImageUrl(blog.imageUrl || CATEGORY_IMAGE_CATALOG.Tech[0].url);
+      setContent(blog.content || '');
+    }
+  }, [isEditMode, blog]);
+
   // Dynamic image choices for currently selected category
   const activePresets = CATEGORY_IMAGE_CATALOG[category] || CATEGORY_IMAGE_CATALOG.General;
 
-  // Strip HTML for accurate word count
-  const plainText = content ? content.replace(/<[^>]*>/g, ' ').trim() : '';
+  // Accurate read time calculation (~200 words/min)
+  const plainText = content ? content.replace(/<[^>]*>/g, ' ').replace(/[#*`_~>-]/g, '').trim() : '';
   const wordCount = plainText ? plainText.split(/\s+/).filter(Boolean).length : 0;
-  const estimatedReadTime = `${Math.max(1, Math.ceil(wordCount / 200))} min read`;
+  const minutes = Math.max(1, Math.ceil(wordCount / 200));
+  const estimatedReadTime = `${minutes} min read`;
 
   // Change Category AND auto-select first cover image for that category
   const handleCategorySelect = (cat) => {
@@ -106,8 +129,13 @@ const PostForm = () => {
     };
 
     try {
-      await dispatch(createBlogAsync(blogData)).unwrap();
-      navigate("/");
+      if (isEditMode && id) {
+        await dispatch(updateBlogAsync({ blogId: id, blogData })).unwrap();
+        navigate(`/posts/${id}`);
+      } else {
+        await dispatch(createBlogAsync(blogData)).unwrap();
+        navigate("/");
+      }
     } catch (err) {
       // Toast notification handled in thunk
     }
@@ -117,13 +145,13 @@ const PostForm = () => {
     <div className="min-h-screen bg-white py-6 px-4 sm:px-6 lg:px-8 relative">
       <div className="max-w-3xl mx-auto space-y-6">
 
-        {/* STICKY TOP CONTROL HEADER (Write / Preview Tabs & Publish Button) */}
+        {/* STICKY TOP CONTROL HEADER (Write / Preview Tabs & Submit Button) */}
         <div className="sticky top-[64px] z-40 bg-white/95 backdrop-blur-md border-b border-zinc-200 py-3 shadow-xs -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           <div className="max-w-3xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5 text-zinc-400" />
-                Article Studio
+                {isEditMode ? <Edit3 className="w-3.5 h-3.5 text-zinc-400" /> : <Sparkles className="w-3.5 h-3.5 text-zinc-400" />}
+                {isEditMode ? 'Edit Article' : 'Article Studio'}
               </span>
               <span className="text-zinc-300">•</span>
               <span className="text-xs font-semibold text-zinc-600">
@@ -158,7 +186,7 @@ const PostForm = () => {
                 </button>
               </div>
 
-              {/* Sticky Publish Button */}
+              {/* Sticky Submit Button */}
               <button
                 type="button"
                 onClick={handleSubmit}
@@ -166,7 +194,7 @@ const PostForm = () => {
                 className="px-4 py-1.5 bg-zinc-900 text-white text-xs font-semibold rounded-lg hover:bg-zinc-800 transition disabled:opacity-40 flex items-center gap-1.5"
               >
                 <Send className="w-3.5 h-3.5" />
-                <span>{isLoading ? 'Publishing...' : 'Publish Story'}</span>
+                <span>{isLoading ? (isEditMode ? 'Saving...' : 'Publishing...') : (isEditMode ? 'Save Changes' : 'Publish Story')}</span>
               </button>
             </div>
           </div>
@@ -218,7 +246,7 @@ const PostForm = () => {
                 </div>
               </div>
 
-              {/* Dynamic Category-Specific Cover Image Presets (6 images for selected category) */}
+              {/* Dynamic Category-Specific Cover Image Presets */}
               <div className="space-y-3 pt-3 border-t border-zinc-200/80">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-zinc-700">

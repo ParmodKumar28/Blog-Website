@@ -5,6 +5,7 @@ import Home from "./components/Home/home";
 import PostForm from "./components/Post Form/postForm";
 import Login from "./components/login/login";
 import PostDetail from "./components/Post/post";
+import Profile from "./components/profile/profile";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Provider } from "react-redux";
@@ -31,6 +32,22 @@ const App = () => {
           element: (
             <ProtectedRoute>
               <PostForm />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/posts/:id/edit",
+          element: (
+            <ProtectedRoute>
+              <PostForm />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/profile",
+          element: (
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           ),
         },

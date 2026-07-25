@@ -14,7 +14,8 @@ export const createBlog = async (blogData) => {
       $push: { blogs: newBlog._id },
     });
 
-    return newBlog;
+    const populatedBlog = await Blog.findById(newBlog._id).populate("user", "username email");
+    return populatedBlog;
   } catch (error) {
     throw new ErrorHandler(400, "Error creating blog");
   }
@@ -43,7 +44,7 @@ export const getBlogById = async (blogId) => {
 // Update blog
 export const updateBlog = async (blogId, blogData) => {
   try {
-    return await Blog.findByIdAndUpdate(blogId, blogData, { new: true });
+    return await Blog.findByIdAndUpdate(blogId, blogData, { new: true }).populate("user", "username email");
   } catch (error) {
     throw new ErrorHandler(400, "Error updating blog");
   }

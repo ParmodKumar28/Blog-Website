@@ -7,7 +7,7 @@ import ConfirmModal from '../common/ConfirmModal';
 import FormattedContent from '../common/FormattedContent';
 import { getBlogCoverImage } from '../Home/home';
 import { toast } from 'react-toastify';
-import { ArrowLeft, Clock, Trash2 } from 'lucide-react';
+import { ArrowLeft, Clock, Trash2, Edit3 } from 'lucide-react';
 
 const BlogDetail = () => {
   const { id } = useParams();
@@ -69,13 +69,23 @@ const BlogDetail = () => {
           </Link>
 
           {isOwner && (
-            <button
-              onClick={() => setIsConfirmOpen(true)}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-600 hover:text-rose-800 transition px-3 py-1.5 rounded-lg border border-rose-200 hover:bg-rose-50"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>Delete Article</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <Link
+                to={`/posts/${id}/edit`}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-800 hover:text-zinc-900 transition px-3 py-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-50"
+              >
+                <Edit3 className="w-3.5 h-3.5" />
+                <span>Edit Article</span>
+              </Link>
+
+              <button
+                onClick={() => setIsConfirmOpen(true)}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-600 hover:text-rose-800 transition px-3 py-1.5 rounded-lg border border-rose-200 hover:bg-rose-50"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Delete Article</span>
+              </button>
+            </div>
           )}
         </div>
 
