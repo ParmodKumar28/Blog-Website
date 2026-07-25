@@ -12,6 +12,12 @@ const userService = {
     const response = await axiosClient.post("/user/login", credentials);
     return response.data;
   },
+
+  // User logout
+  logout: async () => {
+    const response = await axiosClient.post("/user/logout");
+    return response.data;
+  },
 };
 
 export default userService;

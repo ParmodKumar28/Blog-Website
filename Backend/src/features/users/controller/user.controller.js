@@ -71,3 +71,17 @@ export const loginUser = async (req, res, next) => {
     return next(new ErrorHandler(400, error));
   }
 };
+
+// Logout
+export const logoutUser = async (req, res, next) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      sameSite: "lax",
+    });
+    res.json({ message: "Logout successful" });
+  } catch (error) {
+    return next(new ErrorHandler(500, error));
+  }
+};
+

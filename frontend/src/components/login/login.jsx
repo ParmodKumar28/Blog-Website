@@ -1,20 +1,26 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { loginAsync } from '../../Redux/reducers/usersReducer';
 
 // Login form
 const Login = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     // Handle login
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        dispatch(loginAsync({ email, password }));
-        setEmail("");
-        setPassword("");
+        try {
+            await dispatch(loginAsync({ email, password })).unwrap();
+            setEmail("");
+            setPassword("");
+            navigate('/');
+        } catch (err) {
+            // Error handling is managed in thunk / toast
+        }
     };
 
     return (

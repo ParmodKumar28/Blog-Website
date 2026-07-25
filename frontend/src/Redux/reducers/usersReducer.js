@@ -46,9 +46,25 @@ export const loginAsync = createAsyncThunk(
 );
 // Login ends
 
+// Logout
+export const logoutAsync = createAsyncThunk(
+  "users/logout",
+  async () => {
+    try {
+      const data = await userService.logout();
+      return data;
+    } catch (error) {
+      console.log(error);
+      toast.error("Logout failed. Please try again.");
+      throw error;
+    }
+  }
+);
+// Logout ends
+
 // Initial State
 const INITIAL_STATE = {
-  isSignIn: false,
+  isSignIn: Cookies.get("isSignIn") === "true",
   token: "",
   signedUser: {},
   signUpLoading: false,
@@ -98,8 +114,9 @@ const usersSlice = createSlice({
       state.token = action.payload.token;
       state.signedUser = action.payload.user;
       state.isSignIn = true;
-      Cookies.set("token", state.token); // Storing fresh token to cookie
-      Cookies.set("isSignIn", state.isSignIn); // Storing isSignIn to cookie
+      // Note: Server sets the secure httpOnly token cookie automatically.
+      // We only store the client UI flag in cookie:
+      Cookies.set("isSignIn", "true");
       toast.success("Login Successful!");
     });
 
@@ -108,6 +125,17 @@ const usersSlice = createSlice({
       state.loginLoading = false;
     });
     // loginAsync thunk ends
+
+    // logoutAsync thunk starts here
+    builder.addCase(logoutAsync.fulfilled, (state, action) => {
+      state.isSignIn = false;
+      state.token = "";
+      state.signedUser = {};
+      Cookies.remove("token");
+      Cookies.remove("isSignIn");
+      toast.success("Logged out successfully!");
+    });
+    // logoutAsync thunk ends
   },
 });
 
