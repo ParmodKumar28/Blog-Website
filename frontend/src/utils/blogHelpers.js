@@ -120,14 +120,28 @@ export const getFormattedDate = (dateString) => {
 
 /**
  * Resolves author username with fallbacks.
+ * Priority: populated user.username → user.email prefix → ID match against signedUser → default
  */
 export const getAuthorName = (blog, signedUser = null) => {
-  if (blog?.user?.username) {
-    return blog.user.username;
+  // 1. Populated user object from Mongoose .populate()
+  if (blog?.user && typeof blog.user === 'object') {
+    if (blog.user.username && blog.user.username.trim()) {
+      return blog.user.username.trim();
+    }
+    // Derive readable name from email if username missing
+    if (blog.user.email && blog.user.email.includes('@')) {
+      const prefix = blog.user.email.split('@')[0];
+      return prefix.charAt(0).toUpperCase() + prefix.slice(1);
+    }
   }
-  if (typeof blog?.user === 'string' && signedUser && (blog.user === signedUser._id || blog.user === signedUser.id)) {
-    return signedUser.username;
+
+  // 2. Blog user ID matches the currently logged-in user
+  const blogUserId = blog?.user?._id || blog?.user;
+  const currentUserId = signedUser?._id || signedUser?.id;
+  if (blogUserId && currentUserId && blogUserId.toString() === currentUserId.toString()) {
+    if (signedUser?.username) return signedUser.username;
   }
+
   return 'DevBlog Author';
 };
 

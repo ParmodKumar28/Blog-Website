@@ -1,143 +1,151 @@
-// User's reducer is here here all state management is handled related to users and handlers
-// Imports
+// User state management — auth and profile
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import userService from "../../api/userService";
 
-// Async Thunks
 // Sign up
 export const signUpAsync = createAsyncThunk(
   "users/signup",
   async ({ email, username, password }, { rejectWithValue }) => {
     try {
-      const data = await userService.signUp({ email, username, password });
-      return data;
+      return await userService.signUp({ email, username, password });
     } catch (error) {
-      console.log(error);
-      const msg = error.response?.data?.error || "An error occurred. Please try again later.";
+      const msg = error.response?.data?.error || "Registration failed. Please try again.";
       toast.error(msg);
       return rejectWithValue(msg);
     }
   }
 );
-// Sign up ends
 
 // Login
 export const loginAsync = createAsyncThunk(
-  "users/lgin",
+  "users/login",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const data = await userService.login({ email, password });
-      return data;
+      return await userService.login({ email, password });
     } catch (error) {
-      console.log(error);
-      const msg = error.response?.data?.error || "An error occurred. Please try again later.";
+      const msg = error.response?.data?.error || "Login failed. Please try again.";
       toast.error(msg);
       return rejectWithValue(msg);
     }
   }
 );
-// Login ends
 
 // Logout
 export const logoutAsync = createAsyncThunk(
   "users/logout",
   async (_, { rejectWithValue }) => {
     try {
-      const data = await userService.logout();
-      return data;
+      return await userService.logout();
     } catch (error) {
-      console.log(error);
-      const msg = "Logout failed. Please try again.";
+      toast.error("Logout failed. Please try again.");
+      return rejectWithValue("Logout failed");
+    }
+  }
+);
+
+// Restore session from httpOnly cookie (replaces localStorage approach)
+// Called once on app mount — if the JWT cookie is valid, the server returns the user.
+export const fetchCurrentUserAsync = createAsyncThunk(
+  "users/fetchCurrentUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      return await userService.getMe();
+    } catch {
+      // Cookie missing or expired — not an error, just no session
+      return rejectWithValue(null);
+    }
+  }
+);
+
+// Update profile (username and/or profile picture)
+export const updateProfileAsync = createAsyncThunk(
+  "users/updateProfile",
+  async (formData, { rejectWithValue }) => {
+    try {
+      return await userService.updateProfile(formData);
+    } catch (error) {
+      const msg = error.response?.data?.error || "Profile update failed.";
       toast.error(msg);
       return rejectWithValue(msg);
     }
   }
 );
-// Logout ends
 
-// Initial State
+// Initial State — no localStorage; session is restored via /me API call
 const INITIAL_STATE = {
   isSignIn: Cookies.get("isSignIn") === "true",
   token: "",
-  signedUser: {},
+  signedUser: null,   // null = unknown, {} = confirmed logged out
   signUpLoading: false,
   loginLoading: false,
+  profileLoading: false,
+  sessionRestored: false, // true once /me call completes (success or failure)
 };
 
-// Slice
 const usersSlice = createSlice({
-  // Slice name
   name: "users",
-
-  // Initial State
   initialState: INITIAL_STATE,
-
-  // Reducers
   reducers: {},
-
-  // Extra reducer's
   extraReducers: (builder) => {
-    // signUpAsync thunk extra reducer's start's here
-    // When pending
-    builder.addCase(signUpAsync.pending, (state, action) => {
-      state.signUpLoading = true;
-    });
 
-    // When fulfilled
-    builder.addCase(signUpAsync.fulfilled, (state, action) => {
+    // Sign up
+    builder.addCase(signUpAsync.pending, (state) => { state.signUpLoading = true; });
+    builder.addCase(signUpAsync.fulfilled, (state) => {
       state.signUpLoading = false;
-      toast.success("User registered you can now login!");
+      toast.success("Registered! You can now log in.");
     });
+    builder.addCase(signUpAsync.rejected, (state) => { state.signUpLoading = false; });
 
-    // When rejected
-    builder.addCase(signUpAsync.rejected, (state, action) => {
-      state.signUpLoading = false; // Set signUpLoading to false in case of rejection
-    });
-    // signUpAsync thunk extra reducer's end's
-
-    // loginAsync thunk start's here
-    // When pending
-    builder.addCase(loginAsync.pending, (state, action) => {
-      state.loginLoading = true;
-    });
-
-    // When fulfilled
+    // Login
+    builder.addCase(loginAsync.pending, (state) => { state.loginLoading = true; });
     builder.addCase(loginAsync.fulfilled, (state, action) => {
       state.loginLoading = false;
       state.token = action.payload.token;
       state.signedUser = action.payload.user;
       state.isSignIn = true;
-      // Note: Server sets the secure httpOnly token cookie automatically.
-      // We only store the client UI flag in cookie:
+      state.sessionRestored = true;
       Cookies.set("isSignIn", "true");
       toast.success("Login Successful!");
     });
+    builder.addCase(loginAsync.rejected, (state) => { state.loginLoading = false; });
 
-    // When rejected
-    builder.addCase(loginAsync.rejected, (state, action) => {
-      state.loginLoading = false;
-    });
-    // loginAsync thunk ends
-
-    // logoutAsync thunk starts here
-    builder.addCase(logoutAsync.fulfilled, (state, action) => {
+    // Logout
+    builder.addCase(logoutAsync.fulfilled, (state) => {
       state.isSignIn = false;
       state.token = "";
-      state.signedUser = {};
+      state.signedUser = null;
+      state.sessionRestored = true;
       Cookies.remove("token");
       Cookies.remove("isSignIn");
       toast.success("Logged out successfully!");
     });
-    // logoutAsync thunk ends
+
+    // Restore session via /me — called silently on app mount
+    builder.addCase(fetchCurrentUserAsync.fulfilled, (state, action) => {
+      state.signedUser = action.payload.user;
+      state.isSignIn = true;
+      state.sessionRestored = true;
+    });
+    builder.addCase(fetchCurrentUserAsync.rejected, (state) => {
+      // No valid session — clear everything
+      state.signedUser = null;
+      state.isSignIn = false;
+      state.sessionRestored = true;
+      Cookies.remove("isSignIn");
+    });
+
+    // Update profile
+    builder.addCase(updateProfileAsync.pending, (state) => { state.profileLoading = true; });
+    builder.addCase(updateProfileAsync.fulfilled, (state, action) => {
+      state.profileLoading = false;
+      state.signedUser = action.payload.user;
+      toast.success("Profile updated successfully!");
+    });
+    builder.addCase(updateProfileAsync.rejected, (state) => { state.profileLoading = false; });
   },
 });
 
-// Extract user reducer from the slice
 export const usersReducer = usersSlice.reducer;
-
-// Extract actions from the slice
-
-// State from the reducer and exporting state
 export const usersSelector = (state) => state.usersReducer;

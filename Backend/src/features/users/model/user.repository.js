@@ -20,3 +20,21 @@ export const findUserByEmail = async (email) => {
     throw new ErrorHandler(400, "Error finding user by email");
   }
 };
+
+// Get user by ID (used by /me endpoint)
+export const getUserById = async (id) => {
+  try {
+    return await User.findById(id).select("-password");
+  } catch (error) {
+    throw new ErrorHandler(400, "Error fetching user");
+  }
+};
+
+// Update user profile (username and/or profile image)
+export const updateUserProfile = async (id, updateData) => {
+  try {
+    return await User.findByIdAndUpdate(id, updateData, { new: true }).select("-password");
+  } catch (error) {
+    throw new ErrorHandler(400, "Error updating user profile");
+  }
+};

@@ -4,6 +4,8 @@ import "./dotenv.js";
 
 // Imports
 import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
 import { ErrorHandlerMiddleware } from "./middlewares/errorHandlerMiddleware.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -14,6 +16,13 @@ import blogRouter from "../src/features/blogs/routes/blog.routes.js";
 
 // Creating server
 const app = express();
+
+// Resolve __dirname in ES module context
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve uploaded profile images as static files
+app.use("/uploads", express.static(path.join(__dirname, "../../uploads")));
 
 // Setting up cors
 app.use(

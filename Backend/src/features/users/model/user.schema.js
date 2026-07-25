@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
       },
     ],
+    profileImage: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

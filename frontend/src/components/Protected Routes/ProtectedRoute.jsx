@@ -1,18 +1,19 @@
-// Import's
+import React from 'react';
 import { Navigate } from 'react-router-dom';
-import Cookies from 'js-cookie';
 import { useSelector } from 'react-redux';
 import { usersSelector } from '../../Redux/reducers/usersReducer';
 
-// Protected Route component which checks if the user is signed in and has a token
-function ProtectedRoute({ children }) {
-    // Check if there is a token in the cookie
-    // const token = Cookies.get('token');
-    const isSignIn = Cookies.get('isSignIn');
-    // const { token, isSignIn } = useSelector(usersSelector);
-    // Returning JSX
-    return isSignIn ? children : <Navigate to="/login" />;
-}
+// Waits for the /me session restore call to complete before deciding to
+// redirect. This prevents the login flash on page refresh for logged-in users.
+const ProtectedRoute = ({ children }) => {
+  const { isSignIn, sessionRestored } = useSelector(usersSelector);
 
-// Exporting ProtectedRoute
+  // Session restore in progress — render nothing to avoid flash
+  if (!sessionRestored) {
+    return null;
+  }
+
+  return isSignIn ? children : <Navigate to="/login" replace />;
+};
+
 export default ProtectedRoute;

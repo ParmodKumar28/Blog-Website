@@ -1,17 +1,26 @@
-// Router for the user is here
-import express from 'express';
-import { loginUser, registerUser, logoutUser } from '../controller/user.controller.js';
+// User routes
+import express from "express";
+import {
+  registerUser,
+  loginUser,
+  logoutUser,
+  getCurrentUser,
+  updateProfile,
+} from "../controller/user.controller.js";
+import verifyToken from "../../../middlewares/auth.js";
+import upload from "../../../middlewares/multer.middleware.js";
 
 const router = express.Router();
 
-// User registration route
-router.post('/register', registerUser);
+// Auth routes
+router.post("/register", registerUser);
+router.post("/login", loginUser);
+router.post("/logout", logoutUser);
 
-// User login route
-router.post('/login', loginUser);
+// Session restore — called on app load to hydrate Redux from JWT cookie
+router.get("/me", verifyToken, getCurrentUser);
 
-// User logout route
-router.post('/logout', logoutUser);
+// Profile update — supports optional file upload for profile picture
+router.put("/profile", verifyToken, upload.single("profileImage"), updateProfile);
 
-// Exporting router
 export default router;

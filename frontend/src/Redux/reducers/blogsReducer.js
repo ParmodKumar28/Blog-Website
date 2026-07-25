@@ -100,7 +100,12 @@ const blogSlice = createSlice({
   initialState: INITIAL_STATE,
 
   // Reducers
-  reducers: {},
+  reducers: {
+    // Explicitly clear the single blog from state (e.g. when leaving detail page or entering create form)
+    clearBlog: (state) => {
+      state.blog = null;
+    },
+  },
 
   // Extra reducers
   extraReducers: (builder) => {
@@ -197,7 +202,8 @@ const blogSlice = createSlice({
 // Extract blog reducer from the slice
 export const blogsReducer = blogSlice.reducer;
 
-// Extract actions from the slice
+// Export clearBlog action
+export const { clearBlog } = blogSlice.actions;
 
 // State from the reducer and exporting state
 export const blogsSelector = (state) => state.blogsReducer;

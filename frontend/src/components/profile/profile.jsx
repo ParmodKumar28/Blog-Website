@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { blogsSelector, fetchBlogsAsync, deleteBlogAsync } from '../../Redux/reducers/blogsReducer';
-import { usersSelector } from '../../Redux/reducers/usersReducer';
+import { usersSelector, updateProfileAsync } from '../../Redux/reducers/usersReducer';
 import ConfirmModal from '../common/ConfirmModal';
 import { ProfileSkeleton } from '../common/Skeleton';
 import AuthorProfileCard from './AuthorProfileCard';
@@ -14,38 +14,40 @@ const Profile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { blogs, isLoading } = useSelector(blogsSelector);
-  const { signedUser, isSignIn } = useSelector(usersSelector);
+  const { blogs, isLoading: blogsLoading } = useSelector(blogsSelector);
+  const { signedUser, isSignIn, sessionRestored, profileLoading } = useSelector(usersSelector);
 
   const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
-    dispatch(fetchBlogsAsync());
-  }, [dispatch]);
-
-  // Redirect to login if user is not signed in
-  useEffect(() => {
-    if (!isSignIn && !signedUser) {
+    if (sessionRestored && !isSignIn) {
       navigate('/login');
     }
-  }, [isSignIn, signedUser, navigate]);
+  }, [sessionRestored, isSignIn, navigate]);
 
-  if (!isSignIn || !signedUser) {
-    return null;
-  }
+  useEffect(() => {
+    if (isSignIn) {
+      dispatch(fetchBlogsAsync());
+    }
+  }, [dispatch, isSignIn]);
 
-  if (isLoading) {
+  // Show skeleton while session is being restored or blogs loading
+  if (!sessionRestored || blogsLoading) {
     return <ProfileSkeleton />;
   }
 
-  // Filter blogs created by current author
+  if (!isSignIn || !signedUser) return null;
+
+  // Filter to only this author's blogs
   const userBlogs = blogs.filter((b) => {
     const blogUserId = b.user?._id || b.user;
     const currentUserId = signedUser._id;
-    const matchesId = blogUserId && currentUserId && blogUserId.toString() === currentUserId.toString();
-    const matchesUsername = b.user?.username && signedUser.username && b.user.username.toLowerCase() === signedUser.username.toLowerCase();
-    return matchesId || matchesUsername;
+    const byId = blogUserId && currentUserId && blogUserId.toString() === currentUserId.toString();
+    const byUsername = b.user?.username && signedUser.username && b.user.username.toLowerCase() === signedUser.username.toLowerCase();
+    return byId || byUsername;
   });
 
   const handleDeleteConfirm = async () => {
@@ -61,21 +63,45 @@ const Profile = () => {
     }
   };
 
-  const username = signedUser.username || 'Author';
-  const email = signedUser.email || 'author@example.com';
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    // Local preview
+    setImagePreview(URL.createObjectURL(file));
+    // Upload immediately
+    const formData = new FormData();
+    formData.append('profileImage', file);
+    dispatch(updateProfileAsync(formData));
+  };
+
+  const profileImageSrc = imagePreview || (signedUser.profileImage ? `http://localhost:8000${signedUser.profileImage}` : null);
+  const initial = signedUser.username ? signedUser.username.charAt(0).toUpperCase() : 'A';
 
   return (
     <div className="min-h-screen bg-zinc-50/50 py-10 px-4 sm:px-6 lg:px-8 pb-20">
       <div className="max-w-4xl mx-auto space-y-8">
-        
+
         {/* Author Profile Header Card */}
         <AuthorProfileCard
-          username={username}
-          email={email}
+          username={signedUser.username || 'Author'}
+          email={signedUser.email || ''}
           storyCount={userBlogs.length}
+          profileImage={profileImageSrc}
+          initial={initial}
+          profileLoading={profileLoading}
+          onUploadClick={() => fileInputRef.current?.click()}
         />
 
-        {/* My Published Stories Section */}
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileChange}
+        />
+
+        {/* Published Stories */}
         <div className="space-y-6">
           <div className="flex items-center justify-between border-b border-zinc-200 pb-3">
             <h2 className="text-xl font-bold font-serif-editorial text-zinc-900">
@@ -88,9 +114,7 @@ const Profile = () => {
               <div className="w-12 h-12 rounded-full bg-zinc-100 text-zinc-400 flex items-center justify-center mx-auto text-xl">
                 ✍️
               </div>
-              <h3 className="text-lg font-bold text-zinc-800 font-serif-editorial">
-                No Stories Published Yet
-              </h3>
+              <h3 className="text-lg font-bold text-zinc-800 font-serif-editorial">No Stories Yet</h3>
               <p className="text-zinc-500 text-xs max-w-sm mx-auto">
                 Share your ideas, tutorials, and engineering perspectives with the community.
               </p>
@@ -115,14 +139,12 @@ const Profile = () => {
             </div>
           )}
         </div>
-
       </div>
 
-      {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={Boolean(deleteTargetId)}
         title="Delete Story"
-        message="Are you sure you want to permanently delete this story from your profile? This action cannot be undone."
+        message="Are you sure you want to permanently delete this story? This action cannot be undone."
         confirmText="Delete Story"
         cancelText="Cancel"
         isLoading={isDeleting}
