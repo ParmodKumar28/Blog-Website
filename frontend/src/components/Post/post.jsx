@@ -5,8 +5,14 @@ import { fetchBlogByIdAsync, deleteBlogAsync, blogsSelector } from '../../Redux/
 import { usersSelector } from '../../Redux/reducers/usersReducer';
 import ConfirmModal from '../common/ConfirmModal';
 import FormattedContent from '../common/FormattedContent';
-import { getBlogCoverImage, getAuthorName, getAccurateReadTime, getFormattedCategory, getFormattedDate } from '../Home/home';
 import { ArticleDetailSkeleton } from '../common/Skeleton';
+import {
+  getBlogCoverImage,
+  getAuthorName,
+  getAccurateReadTime,
+  getFormattedCategory,
+  getFormattedDate,
+} from '../../utils/blogHelpers';
 import { toast } from 'react-toastify';
 import { ArrowLeft, Clock, Trash2, Edit3 } from 'lucide-react';
 

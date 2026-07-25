@@ -3,11 +3,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { blogsSelector, fetchBlogsAsync, deleteBlogAsync } from '../../Redux/reducers/blogsReducer';
 import { usersSelector } from '../../Redux/reducers/usersReducer';
-import { getBlogCoverImage, getAuthorName, getAccurateReadTime, getFormattedCategory, getFormattedDate } from '../Home/home';
 import ConfirmModal from '../common/ConfirmModal';
 import { ProfileSkeleton } from '../common/Skeleton';
+import {
+  getBlogCoverImage,
+  getAccurateReadTime,
+  getFormattedCategory,
+  getFormattedDate,
+} from '../../utils/blogHelpers';
 import { toast } from 'react-toastify';
-import { User, Mail, BookOpen, Clock, Trash2, ArrowRight, PenSquare, Edit3 } from 'lucide-react';
+import { Mail, BookOpen, Clock, Trash2, ArrowRight, PenSquare, Edit3 } from 'lucide-react';
 
 const Profile = () => {
   const dispatch = useDispatch();
