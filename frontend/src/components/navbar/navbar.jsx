@@ -27,15 +27,15 @@ const Navbar = () => {
             <Link to="/" className="flex items-center gap-3 group">
               <div className="relative w-9 h-9 rounded-xl bg-zinc-900 text-white flex items-center justify-center font-bold shadow-md group-hover:bg-zinc-800 transition duration-300 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-tr from-zinc-950 via-zinc-900 to-zinc-800" />
-                <span className="relative z-10 font-serif-editorial text-white text-lg tracking-tighter">D</span>
+                <span className="relative z-10 font-serif-editorial text-white text-lg tracking-tighter">B</span>
                 <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-blue-500 rounded-tl-md" />
               </div>
               <div className="flex flex-col justify-center">
                 <span className="text-lg font-extrabold tracking-tight text-zinc-900 font-serif-editorial leading-none">
-                  DevJournal
+                  Blogverse
                 </span>
                 <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mt-0.5 leading-none">
-                  Engineering &amp; Design
+                  Your Universe of Ideas
                 </span>
               </div>
             </Link>

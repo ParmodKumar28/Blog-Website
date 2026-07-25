@@ -41,7 +41,7 @@ app.use(express.json());
 
 // Default route
 app.get("/", (req, res, next) => {
-  res.send("Welcome to the Blog app :)");
+  res.send("Welcome to the Blogverse API :)");
 });
 
 // Routes
