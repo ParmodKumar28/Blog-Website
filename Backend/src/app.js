@@ -25,10 +25,29 @@ const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "../../uploads")));
 
 // Setting up cors
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:8000",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:8000"],
-    credentials: true, // Allow credentials (cookies)
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, or Postman)
+      if (!origin) return callback(null, true);
+      
+      const isAllowed =
+        allowedOrigins.includes(origin) ||
+        (origin.endsWith(".netlify.app") && !origin.includes("malicious"));
+
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // Allow credentials (cookies/headers)
   })
 );
 

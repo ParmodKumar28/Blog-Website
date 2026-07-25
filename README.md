@@ -110,6 +110,7 @@ DB_URL=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
 JWT_EXPIRES=1d
 COOKIE_EXPIRES_IN=1
+FRONTEND_URL=https://your-blogverse-app.netlify.app
 ```
 
 #### Frontend Configuration
