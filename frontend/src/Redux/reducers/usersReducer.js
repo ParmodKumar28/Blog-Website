@@ -1,15 +1,9 @@
 // User's reducer is here here all state management is handled related to users and handlers
 // Imports
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
-
-// Base url for user's
-const BASE_URL_USERS = "http://localhost:8000/api/user";
-
-// Setting Axios default for credentials
-axios.defaults.withCredentials = true;
+import userService from "../../api/userService";
 
 // Async Thunks
 // Sign up
@@ -17,16 +11,8 @@ export const signUpAsync = createAsyncThunk(
   "users/signup",
   async ({ email, username, password }) => {
     try {
-      // Sending request to the server
-      const response = await axios.post(`${BASE_URL_USERS}/register`, {
-        email,
-        username,
-        password,
-      });
-      // If response is ok then return repsonse.data
-      if (response.statusText === "OK") {
-        return response.data;
-      }
+      const data = await userService.signUp({ email, username, password });
+      return data;
     } catch (error) {
       console.log(error);
       if (error.response && error.response.data && error.response.data.error) {
@@ -45,15 +31,8 @@ export const loginAsync = createAsyncThunk(
   "users/lgin",
   async ({ email, password }) => {
     try {
-      // Sending request to the server
-      const response = await axios.post(`${BASE_URL_USERS}/login`, {
-        email,
-        password,
-      });
-      // If response is ok then return repsonse.data
-      if (response.statusText === "OK") {
-        return response.data;
-      }
+      const data = await userService.login({ email, password });
+      return data;
     } catch (error) {
       console.log(error);
       if (error.response && error.response.data && error.response.data.error) {

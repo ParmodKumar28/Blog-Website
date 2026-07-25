@@ -1,12 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 import { toast } from "react-toastify";
-
-// Base URL for blog posts
-const BASE_URL_BLOGS = "http://localhost:8000/api/blog";
-
-// Setting Axios default for credentials
-axios.defaults.withCredentials = true;
+import blogService from "../../api/blogService";
 
 // Async Thunks
 // Fetch all blogs
@@ -14,12 +8,8 @@ export const fetchBlogsAsync = createAsyncThunk(
   "blogs/fetchBlogs",
   async () => {
     try {
-      // Sending request to the server
-      const response = await axios.get(`${BASE_URL_BLOGS}`);
-      // If response is ok then return response.data
-      if (response.statusText === "OK") {
-        return response.data;
-      }
+      const data = await blogService.getAllBlogs();
+      return data;
     } catch (error) {
       console.log(error);
       toast.error("An error occurred while fetching blogs.");
@@ -33,12 +23,8 @@ export const createBlogAsync = createAsyncThunk(
   "blogs/createBlog",
   async (blogData) => {
     try {
-      // Sending request to the server
-      const response = await axios.post(`${BASE_URL_BLOGS}`, blogData);
-      // If response is ok then return response.data
-      if (response.statusText === "OK") {
-        return response.data;
-      }
+      const data = await blogService.createBlog(blogData);
+      return data;
     } catch (error) {
       console.log(error);
       toast.error("An error occurred while creating the blog.");
@@ -52,12 +38,8 @@ export const updateBlogAsync = createAsyncThunk(
   "blogs/updateBlog",
   async ({ blogId, blogData }) => {
     try {
-      // Sending request to the server
-      const response = await axios.put(`${BASE_URL_BLOGS}/${blogId}`, blogData);
-      // If response is ok then return response.data
-      if (response.statusText === "OK") {
-        return response.data;
-      }
+      const data = await blogService.updateBlog(blogId, blogData);
+      return data;
     } catch (error) {
       console.log(error);
       toast.error("An error occurred while updating the blog.");
@@ -71,12 +53,8 @@ export const deleteBlogAsync = createAsyncThunk(
   "blogs/deleteBlog",
   async (blogId) => {
     try {
-      // Sending request to the server
-      const response = await axios.delete(`${BASE_URL_BLOGS}/${blogId}`);
-      // If response is ok then return response.data
-      if (response.statusText === "OK") {
-        return response.data;
-      }
+      const data = await blogService.deleteBlog(blogId);
+      return data;
     } catch (error) {
       console.log(error);
       toast.error("An error occurred while deleting the blog.");
@@ -90,12 +68,8 @@ export const fetchBlogByIdAsync = createAsyncThunk(
   "blogs/fetchBlogById",
   async (blogId) => {
     try {
-      // Sending request to the server
-      const response = await axios.get(`${BASE_URL_BLOGS}/${blogId}`);
-      // If response is ok then return response.data
-      if (response.statusText === "OK") {
-        return response.data;
-      }
+      const data = await blogService.getBlogById(blogId);
+      return data;
     } catch (error) {
       console.log(error);
       toast.error("An error occurred while fetching the blog.");
