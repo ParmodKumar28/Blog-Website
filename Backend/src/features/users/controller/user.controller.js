@@ -9,10 +9,10 @@ export const registerUser = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
 
-    // Check if username and password are provided
-    if (!username || !password) {
+    // Check if username, email, and password are provided
+    if (!username || !email || !password) {
       return next(
-        new ErrorHandler(400, "Enter username and password properly!")
+        new ErrorHandler(400, "Enter username, email, and password properly!")
       );
     }
 
@@ -43,6 +43,10 @@ export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return next(new ErrorHandler(400, "Please provide email and password"));
+    }
+
     // Check if user exists
     const user = await findUserByEmail(email);
     if (!user) {
@@ -57,16 +61,25 @@ export const loginUser = async (req, res, next) => {
 
     // Generate JWT token
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "7d",
     });
 
     // Set token in cookie
     res.cookie("token", token, {
       httpOnly: true,
-      maxAge: 3600000, // 1 hour in milliseconds
+      maxAge: 7 * 24 * 3600 * 1000, // 7 days in milliseconds
     });
 
-    res.json({ message: "Login successful", token, user });
+    // Return sanitized user object (without password hash)
+    const sanitizedUser = {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      blogs: user.blogs,
+      createdAt: user.createdAt,
+    };
+
+    res.json({ message: "Login successful", token, user: sanitizedUser });
   } catch (error) {
     return next(new ErrorHandler(400, error));
   }
@@ -84,4 +97,3 @@ export const logoutUser = async (req, res, next) => {
     return next(new ErrorHandler(500, error));
   }
 };
-

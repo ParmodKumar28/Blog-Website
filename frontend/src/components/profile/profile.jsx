@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { blogsSelector, fetchBlogsAsync, deleteBlogAsync } from '../../Redux/reducers/blogsReducer';
 import { usersSelector } from '../../Redux/reducers/usersReducer';
-import { getBlogCoverImage } from '../Home/home';
+import { getBlogCoverImage, getAuthorName, getAccurateReadTime, getFormattedCategory, getFormattedDate } from '../Home/home';
 import ConfirmModal from '../common/ConfirmModal';
 import { toast } from 'react-toastify';
 import { User, Mail, BookOpen, Clock, Trash2, ArrowRight, PenSquare, Edit3 } from 'lucide-react';
@@ -144,9 +144,9 @@ const Profile = () => {
             <div className="space-y-4">
               {userBlogs.map((blog, idx) => {
                 const coverImg = getBlogCoverImage(blog, idx);
-                const formattedDate = blog.createdAt
-                  ? new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                  : 'Recently Published';
+                const readTime = getAccurateReadTime(blog);
+                const formattedCat = getFormattedCategory(blog.category);
+                const formattedDate = getFormattedDate(blog.createdAt);
 
                 return (
                   <div
@@ -162,7 +162,7 @@ const Profile = () => {
                       />
                       <div className="absolute top-2 left-2">
                         <span className="tag-pill bg-white/90 backdrop-blur-xs text-[10px]">
-                          {blog.category || 'General'}
+                          {formattedCat}
                         </span>
                       </div>
                     </div>
@@ -175,7 +175,7 @@ const Profile = () => {
                           <span>•</span>
                           <span className="flex items-center gap-1">
                             <Clock className="w-3 h-3 text-zinc-400" />
-                            {blog.readTime || '3 min read'}
+                            {readTime}
                           </span>
                         </div>
                         <h3 className="text-lg font-bold font-serif-editorial text-zinc-900 leading-snug hover:text-blue-600 transition">

@@ -1,4 +1,4 @@
-// Blog controller to communicate with route's and repository
+// Blog controller to communicate with routes and repository
 import ErrorHandler from "../../../utils/ErrorHandler.js";
 import {
   createBlog,
@@ -12,16 +12,14 @@ import {
 export const createNewBlog = async (req, res, next) => {
   try {
     const { title, subtitle, content, imageUrl, category, readTime } = req.body;
-    const userId = req.user._id; // Extract user ID from request
+    const userId = req.user._id; // Extract user ID from auth token middleware
 
-    // Check if title, content, and user ID are provided
     if (!title || !content || !userId) {
       return next(
         new ErrorHandler(400, "Title and content are required!")
       );
     }
 
-    // Create new blog with expanded fields
     const newBlog = await createBlog({
       title,
       subtitle: subtitle || "",
@@ -70,19 +68,34 @@ export const getBlogByIdHandler = async (req, res, next) => {
 export const updateBlogHandler = async (req, res, next) => {
   try {
     const blogId = req.params.id;
-    const { title, content } = req.body;
+    const userId = req.user._id;
+    const { title, subtitle, content, imageUrl, category, readTime } = req.body;
 
-    // Check if title and content are provided
     if (!title || !content) {
-      return next(new ErrorHandler(400, "Enter title and content properly!"));
+      return next(new ErrorHandler(400, "Title and content are required!"));
     }
 
-    // Update blog
-    const updatedBlog = await updateBlog(blogId, req.body);
-
-    if (!updatedBlog) {
+    // Check if the blog exists
+    const blog = await getBlogById(blogId);
+    if (!blog) {
       return next(new ErrorHandler(404, "Blog not found"));
     }
+
+    // Safely extract author ID whether blog.user is populated object or string ID
+    const blogAuthorId = blog.user._id ? blog.user._id.toString() : blog.user.toString();
+    if (blogAuthorId !== userId.toString()) {
+      return next(new ErrorHandler(403, "Unauthorized to update this blog"));
+    }
+
+    // Update blog with validated fields
+    const updatedBlog = await updateBlog(blogId, {
+      title,
+      subtitle: subtitle || "",
+      content,
+      imageUrl: imageUrl || "",
+      category: category || "General",
+      readTime: readTime || "3 min read",
+    });
 
     res.json({ message: "Blog updated successfully", blog: updatedBlog });
   } catch (error) {
@@ -94,7 +107,7 @@ export const updateBlogHandler = async (req, res, next) => {
 export const deleteBlogHandler = async (req, res, next) => {
   try {
     const blogId = req.params.id;
-    const userId = req.user._id; // Extract user ID from request
+    const userId = req.user._id;
 
     // Check if the blog exists
     const blog = await getBlogById(blogId);
@@ -102,8 +115,9 @@ export const deleteBlogHandler = async (req, res, next) => {
       return next(new ErrorHandler(404, "Blog not found"));
     }
 
-    // Check if the user is authorized to delete the blog
-    if (blog.user.toString() !== userId.toString()) {
+    // Safely extract author ID whether blog.user is populated object or string ID
+    const blogAuthorId = blog.user._id ? blog.user._id.toString() : blog.user.toString();
+    if (blogAuthorId !== userId.toString()) {
       return next(new ErrorHandler(403, "Unauthorized to delete this blog"));
     }
 

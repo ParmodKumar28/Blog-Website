@@ -5,7 +5,7 @@ import { fetchBlogByIdAsync, deleteBlogAsync, blogsSelector } from '../../Redux/
 import { usersSelector } from '../../Redux/reducers/usersReducer';
 import ConfirmModal from '../common/ConfirmModal';
 import FormattedContent from '../common/FormattedContent';
-import { getBlogCoverImage } from '../Home/home';
+import { getBlogCoverImage, getAuthorName, getAccurateReadTime, getFormattedCategory, getFormattedDate } from '../Home/home';
 import { toast } from 'react-toastify';
 import { ArrowLeft, Clock, Trash2, Edit3 } from 'lucide-react';
 
@@ -47,12 +47,14 @@ const BlogDetail = () => {
   }
 
   const coverImg = getBlogCoverImage(blog);
-  const authorName = blog.user?.username || 'DevBlog Author';
-  const formattedDate = blog.createdAt
-    ? new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-    : 'Recently Published';
+  const authorName = getAuthorName(blog, signedUser);
+  const readTime = getAccurateReadTime(blog);
+  const formattedCategory = getFormattedCategory(blog.category);
+  const formattedDate = getFormattedDate(blog.createdAt);
 
-  const isOwner = isSignIn && signedUser?._id && blog.user?._id === signedUser._id;
+  const blogUserId = blog.user?._id || blog.user;
+  const currentUserId = signedUser?._id;
+  const isOwner = isSignIn && currentUserId && blogUserId && (blogUserId.toString() === currentUserId.toString() || blog.user?.username === signedUser?.username);
 
   return (
     <div className="min-h-screen bg-white py-10 px-4 sm:px-6 lg:px-8">
@@ -92,10 +94,10 @@ const BlogDetail = () => {
         {/* Article Meta & Title Header */}
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <span className="tag-pill">{blog.category || 'General'}</span>
+            <span className="tag-pill">{formattedCategory}</span>
             <span className="text-xs text-zinc-400 font-medium flex items-center gap-1">
               <Clock className="w-3.5 h-3.5 text-zinc-400" />
-              {blog.readTime || '3 min read'}
+              {readTime}
             </span>
           </div>
 
