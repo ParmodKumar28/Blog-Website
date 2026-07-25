@@ -9,18 +9,15 @@ import userService from "../../api/userService";
 // Sign up
 export const signUpAsync = createAsyncThunk(
   "users/signup",
-  async ({ email, username, password }) => {
+  async ({ email, username, password }, { rejectWithValue }) => {
     try {
       const data = await userService.signUp({ email, username, password });
       return data;
     } catch (error) {
       console.log(error);
-      if (error.response && error.response.data && error.response.data.error) {
-        toast.error(error.response.data.error); // Display the error message in a toast
-      } else {
-        toast.error("An error occurred. Please try again later.");
-      }
-      throw error; // Throw the error to trigger the rejected case
+      const msg = error.response?.data?.error || "An error occurred. Please try again later.";
+      toast.error(msg);
+      return rejectWithValue(msg);
     }
   }
 );
@@ -29,18 +26,15 @@ export const signUpAsync = createAsyncThunk(
 // Login
 export const loginAsync = createAsyncThunk(
   "users/lgin",
-  async ({ email, password }) => {
+  async ({ email, password }, { rejectWithValue }) => {
     try {
       const data = await userService.login({ email, password });
       return data;
     } catch (error) {
       console.log(error);
-      if (error.response && error.response.data && error.response.data.error) {
-        toast.error(error.response.data.error); // Display the error message in a toast
-      } else {
-        toast.error("An error occurred. Please try again later.");
-      }
-      throw error;
+      const msg = error.response?.data?.error || "An error occurred. Please try again later.";
+      toast.error(msg);
+      return rejectWithValue(msg);
     }
   }
 );
@@ -49,14 +43,15 @@ export const loginAsync = createAsyncThunk(
 // Logout
 export const logoutAsync = createAsyncThunk(
   "users/logout",
-  async () => {
+  async (_, { rejectWithValue }) => {
     try {
       const data = await userService.logout();
       return data;
     } catch (error) {
       console.log(error);
-      toast.error("Logout failed. Please try again.");
-      throw error;
+      const msg = "Logout failed. Please try again.";
+      toast.error(msg);
+      return rejectWithValue(msg);
     }
   }
 );

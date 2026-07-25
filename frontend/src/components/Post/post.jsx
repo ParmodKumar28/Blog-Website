@@ -7,7 +7,7 @@ import { fetchBlogByIdAsync, deleteBlogAsync, blogsSelector } from '../../Redux/
 const BlogDetail = () => {
     const { id } = useParams();
     const dispatch = useDispatch();
-    const { blog } = useSelector(blogsSelector);
+    const { blog, isLoading } = useSelector(blogsSelector);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -15,15 +15,19 @@ const BlogDetail = () => {
         dispatch(fetchBlogByIdAsync(id));
     }, [dispatch, id]);
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
         if (window.confirm('Are you sure you want to delete this blog?')) {
-            dispatch(deleteBlogAsync(id));
-            navigate("/");
+            try {
+                await dispatch(deleteBlogAsync(id)).unwrap();
+                navigate("/");
+            } catch (err) {
+                // Toast notification handled in thunk
+            }
         }
     };
 
-    if (!blog) {
-        return <p className="text-center mt-8">Loading...</p>;
+    if (isLoading || !blog) {
+        return <p className="text-center mt-8 text-xl text-gray-500">Loading post details...</p>;
     }
 
     return (

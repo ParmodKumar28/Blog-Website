@@ -1,23 +1,29 @@
 // Sign up component
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { signUpAsync } from '../../Redux/reducers/usersReducer';
 
 const Signup = () => {
     // Dispatcher's and states
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     // Signup button handler
-    const handleSignup = (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault();
-        dispatch(signUpAsync({ email, username, password }));
-        setEmail("");
-        setPassword("");
-        setUsername("");
+        try {
+            await dispatch(signUpAsync({ email, username, password })).unwrap();
+            setEmail("");
+            setPassword("");
+            setUsername("");
+            navigate("/login");
+        } catch (err) {
+            // Error handling managed in thunk
+        }
     };
 
     return (

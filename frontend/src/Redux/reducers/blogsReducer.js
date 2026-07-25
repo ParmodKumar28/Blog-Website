@@ -6,14 +6,15 @@ import blogService from "../../api/blogService";
 // Fetch all blogs
 export const fetchBlogsAsync = createAsyncThunk(
   "blogs/fetchBlogs",
-  async () => {
+  async (_, { rejectWithValue }) => {
     try {
       const data = await blogService.getAllBlogs();
       return data;
     } catch (error) {
       console.log(error);
-      toast.error("An error occurred while fetching blogs.");
-      throw error;
+      const msg = error.response?.data?.error || "An error occurred while fetching blogs.";
+      toast.error(msg);
+      return rejectWithValue(msg);
     }
   }
 );
@@ -21,14 +22,15 @@ export const fetchBlogsAsync = createAsyncThunk(
 // Create new blog
 export const createBlogAsync = createAsyncThunk(
   "blogs/createBlog",
-  async (blogData) => {
+  async (blogData, { rejectWithValue }) => {
     try {
       const data = await blogService.createBlog(blogData);
       return data;
     } catch (error) {
       console.log(error);
-      toast.error("An error occurred while creating the blog.");
-      throw error;
+      const msg = error.response?.data?.error || "An error occurred while creating the blog.";
+      toast.error(msg);
+      return rejectWithValue(msg);
     }
   }
 );
@@ -36,14 +38,15 @@ export const createBlogAsync = createAsyncThunk(
 // Update blog by ID
 export const updateBlogAsync = createAsyncThunk(
   "blogs/updateBlog",
-  async ({ blogId, blogData }) => {
+  async ({ blogId, blogData }, { rejectWithValue }) => {
     try {
       const data = await blogService.updateBlog(blogId, blogData);
       return data;
     } catch (error) {
       console.log(error);
-      toast.error("An error occurred while updating the blog.");
-      throw error;
+      const msg = error.response?.data?.error || "An error occurred while updating the blog.";
+      toast.error(msg);
+      return rejectWithValue(msg);
     }
   }
 );
@@ -51,14 +54,15 @@ export const updateBlogAsync = createAsyncThunk(
 // Delete blog by ID
 export const deleteBlogAsync = createAsyncThunk(
   "blogs/deleteBlog",
-  async (blogId) => {
+  async (blogId, { rejectWithValue }) => {
     try {
       const data = await blogService.deleteBlog(blogId);
       return data;
     } catch (error) {
       console.log(error);
-      toast.error("An error occurred while deleting the blog.");
-      throw error;
+      const msg = error.response?.data?.error || "An error occurred while deleting the blog.";
+      toast.error(msg);
+      return rejectWithValue(msg);
     }
   }
 );
@@ -66,14 +70,15 @@ export const deleteBlogAsync = createAsyncThunk(
 // Async Thunk to fetch a blog by ID
 export const fetchBlogByIdAsync = createAsyncThunk(
   "blogs/fetchBlogById",
-  async (blogId) => {
+  async (blogId, { rejectWithValue }) => {
     try {
       const data = await blogService.getBlogById(blogId);
       return data;
     } catch (error) {
       console.log(error);
-      toast.error("An error occurred while fetching the blog.");
-      throw error;
+      const msg = error.response?.data?.error || "An error occurred while fetching the blog.";
+      toast.error(msg);
+      return rejectWithValue(msg);
     }
   }
 );
@@ -82,7 +87,8 @@ export const fetchBlogByIdAsync = createAsyncThunk(
 const INITIAL_STATE = {
   blogs: [],
   isLoading: false,
-  blog: {},
+  blog: null,
+  error: null,
 };
 
 // Slice
@@ -98,61 +104,93 @@ const blogSlice = createSlice({
 
   // Extra reducers
   extraReducers: (builder) => {
-    // FetchBlogsAsync thunk extra reducers start here
-    // When pending
-    builder.addCase(fetchBlogsAsync.pending, (state, action) => {
+    // FetchBlogsAsync
+    builder.addCase(fetchBlogsAsync.pending, (state) => {
       state.isLoading = true;
+      state.error = null;
     });
-
-    // When fulfilled
     builder.addCase(fetchBlogsAsync.fulfilled, (state, action) => {
       state.isLoading = false;
       state.blogs = action.payload;
     });
-
-    // When rejected
     builder.addCase(fetchBlogsAsync.rejected, (state, action) => {
       state.isLoading = false;
+      state.error = action.payload;
     });
-    // FetchBlogsAsync thunk extra reducers end here
 
-    // CreateBlogAsync thunk extra reducers start here
-    // When fulfilled
+    // CreateBlogAsync
+    builder.addCase(createBlogAsync.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    });
     builder.addCase(createBlogAsync.fulfilled, (state, action) => {
-      state.blogs.push(action.payload);
+      state.isLoading = false;
+      const createdBlog = action.payload?.blog || action.payload;
+      if (createdBlog && createdBlog._id) {
+        state.blogs.push(createdBlog);
+      }
       toast.success("Blog created successfully.");
     });
-    // CreateBlogAsync thunk extra reducers end here
-
-    // UpdateBlogAsync thunk extra reducers start here
-    // When fulfilled
-    builder.addCase(updateBlogAsync.fulfilled, (state, action) => {
-      const index = state.blogs.findIndex(
-        (blog) => blog._id === action.payload._id
-      );
-      if (index !== -1) {
-        state.blogs[index] = action.payload;
-        toast.success("Blog updated successfully.");
-      }
+    builder.addCase(createBlogAsync.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
     });
-    // UpdateBlogAsync thunk extra reducers end here
 
-    // DeleteBlogAsync thunk extra reducers start here
-    // When fulfilled
+    // UpdateBlogAsync
+    builder.addCase(updateBlogAsync.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    });
+    builder.addCase(updateBlogAsync.fulfilled, (state, action) => {
+      state.isLoading = false;
+      const updatedBlog = action.payload?.blog || action.payload;
+      if (updatedBlog && updatedBlog._id) {
+        const index = state.blogs.findIndex(
+          (blog) => blog._id === updatedBlog._id
+        );
+        if (index !== -1) {
+          state.blogs[index] = updatedBlog;
+        }
+      }
+      toast.success("Blog updated successfully.");
+    });
+    builder.addCase(updateBlogAsync.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    });
+
+    // DeleteBlogAsync
+    builder.addCase(deleteBlogAsync.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    });
     builder.addCase(deleteBlogAsync.fulfilled, (state, action) => {
+      state.isLoading = false;
+      const deletedId = action.meta.arg;
       state.blogs = state.blogs.filter(
-        (blog) => blog._id !== action.payload._id
+        (blog) => blog._id !== deletedId
       );
       toast.success("Blog deleted successfully.");
     });
-    // DeleteBlogAsync thunk extra reducers end here
-
-    // FetchBlogByIdAsync thunk extra reducers start here
-    // When fulfilled
-    builder.addCase(fetchBlogByIdAsync.fulfilled, (state, action) => {
-      state.blog = action.payload;
+    builder.addCase(deleteBlogAsync.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
     });
-    // FetchBlogByIdAsync thunk extra reducers end here
+
+    // FetchBlogByIdAsync
+    builder.addCase(fetchBlogByIdAsync.pending, (state) => {
+      state.isLoading = true;
+      state.blog = null;
+      state.error = null;
+    });
+    builder.addCase(fetchBlogByIdAsync.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.blog = action.payload?.blog || action.payload;
+    });
+    builder.addCase(fetchBlogByIdAsync.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    });
   },
 });
 

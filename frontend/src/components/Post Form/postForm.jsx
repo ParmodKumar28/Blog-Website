@@ -1,20 +1,26 @@
 import React, { useState } from 'react';
-import { createBlogAsync, updateBlogAsync } from '../../Redux/reducers/blogsReducer';
+import { createBlogAsync } from '../../Redux/reducers/blogsReducer';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-// Post form componenet
+// Post form component
 const PostForm = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
 
     // Submit handler
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const blogData = { title, content };
-        dispatch(createBlogAsync(blogData));
-        setTitle("");
-        setContent("");
+        try {
+            await dispatch(createBlogAsync({ title, content })).unwrap();
+            setTitle("");
+            setContent("");
+            navigate("/");
+        } catch (err) {
+            // Error notification is handled in thunk
+        }
     };
 
     return (

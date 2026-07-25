@@ -35,10 +35,14 @@ const Home = () => {
                             <h1 className="text-3xl font-bold mt-8 mb-4 text-center">All Blog Posts</h1>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 m-5">
                                 {blogs.map((blog, index) => (
-                                    <div key={index} className="bg-white shadow-md p-4 mb-4">
-                                        <h2 className="text-xl font-semibold mb-2">{blog.title}</h2>
-                                        <p className="text-gray-600">{blog.content.substring(0, 100)}</p>
-                                        <Link to={`/posts/${blog._id}`} className="text-blue-500 mt-2 block">Read more</Link>
+                                    <div key={blog._id || index} className="bg-white shadow-md p-4 mb-4">
+                                        <h2 className="text-xl font-semibold mb-2">{blog?.title}</h2>
+                                        <p className="text-gray-600">
+                                            {blog?.content
+                                                ? (blog.content.length > 100 ? `${blog.content.substring(0, 100)}...` : blog.content)
+                                                : ''}
+                                        </p>
+                                        <Link to={`/posts/${blog?._id}`} className="text-blue-500 mt-2 block">Read more</Link>
                                     </div>
                                 ))}
                             </div>
