@@ -26,7 +26,7 @@ export const createNewBlog = async (req, res, next) => {
       content,
       imageUrl: imageUrl || "",
       category: category || "General",
-      readTime: readTime || "3 min read",
+      readTime: readTime || "2 min read",
       user: userId,
     });
 
@@ -94,7 +94,7 @@ export const updateBlogHandler = async (req, res, next) => {
       content,
       imageUrl: imageUrl || "",
       category: category || "General",
-      readTime: readTime || "3 min read",
+      readTime: readTime || "2 min read",
     });
 
     res.json({ message: "Blog updated successfully", blog: updatedBlog });

@@ -4,10 +4,10 @@ import ErrorHandler from "../utils/ErrorHandler.js";
 import User from "../features/users/model/user.schema.js";
 
 const verifyToken = async (req, res, next) => {
-  // Get token from cookies or Authorization header
-  let token = req.cookies?.token;
+  // Get token strictly from Authorization header
+  let token = null;
 
-  if (!token && req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
     token = req.headers.authorization.split(" ")[1];
   }
 

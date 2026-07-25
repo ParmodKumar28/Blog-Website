@@ -27,7 +27,7 @@ const postSchema = new mongoose.Schema(
     },
     readTime: {
       type: String,
-      default: "3 min read",
+      default: "2 min read",
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,

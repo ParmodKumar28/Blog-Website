@@ -1,6 +1,5 @@
 // User state management — auth and profile
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import userService from "../../api/userService";
 
@@ -73,10 +72,10 @@ export const updateProfileAsync = createAsyncThunk(
   }
 );
 
-// Initial State — no localStorage; session is restored via /me API call
+// Initial State — restores token and isSignIn flag from localStorage
 const INITIAL_STATE = {
-  isSignIn: Cookies.get("isSignIn") === "true",
-  token: "",
+  isSignIn: Boolean(localStorage.getItem("token")),
+  token: localStorage.getItem("token") || "",
   signedUser: null,   // null = unknown, {} = confirmed logged out
   signUpLoading: false,
   loginLoading: false,
@@ -106,7 +105,7 @@ const usersSlice = createSlice({
       state.signedUser = action.payload.user;
       state.isSignIn = true;
       state.sessionRestored = true;
-      Cookies.set("isSignIn", "true");
+      localStorage.setItem("token", action.payload.token);
       toast.success("Login Successful!");
     });
     builder.addCase(loginAsync.rejected, (state) => { state.loginLoading = false; });
@@ -117,8 +116,7 @@ const usersSlice = createSlice({
       state.token = "";
       state.signedUser = null;
       state.sessionRestored = true;
-      Cookies.remove("token");
-      Cookies.remove("isSignIn");
+      localStorage.removeItem("token");
       toast.success("Logged out successfully!");
     });
 
@@ -133,7 +131,7 @@ const usersSlice = createSlice({
       state.signedUser = null;
       state.isSignIn = false;
       state.sessionRestored = true;
-      Cookies.remove("isSignIn");
+      localStorage.removeItem("token");
     });
 
     // Update profile

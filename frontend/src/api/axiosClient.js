@@ -14,7 +14,7 @@ const axiosClient = axios.create({
 // Request Interceptor: Attach authentication token automatically if available
 axiosClient.interceptors.request.use(
   (config) => {
-    const token = Cookies.get("token");
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

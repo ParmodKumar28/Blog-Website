@@ -61,19 +61,13 @@ export const loginUser = async (req, res, next) => {
       expiresIn: "7d",
     });
 
-    // httpOnly cookie — not accessible from JS, secure by design
-    res.cookie("token", token, {
-      httpOnly: true,
-      maxAge: 7 * 24 * 3600 * 1000, // 7 days
-    });
-
     res.json({ message: "Login successful", token, user: sanitizeUser(user) });
   } catch (error) {
     return next(new ErrorHandler(400, error));
   }
 };
 
-// GET /api/user/me  — restore session from httpOnly cookie (no localStorage needed)
+// GET /api/user/me  — restore session from authorization header
 export const getCurrentUser = async (req, res, next) => {
   try {
     // req.user is already attached by verifyToken middleware
@@ -115,7 +109,6 @@ export const updateProfile = async (req, res, next) => {
 // POST /api/user/logout
 export const logoutUser = async (req, res, next) => {
   try {
-    res.clearCookie("token", { httpOnly: true, sameSite: "lax" });
     res.json({ message: "Logout successful" });
   } catch (error) {
     return next(new ErrorHandler(500, error));
