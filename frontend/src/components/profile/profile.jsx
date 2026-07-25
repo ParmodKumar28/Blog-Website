@@ -1,21 +1,29 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
-import { blogsSelector, fetchBlogsAsync, deleteBlogAsync } from '../../Redux/reducers/blogsReducer';
-import { usersSelector, updateProfileAsync } from '../../Redux/reducers/usersReducer';
-import ConfirmModal from '../common/ConfirmModal';
-import { ProfileSkeleton } from '../common/Skeleton';
-import AuthorProfileCard from './AuthorProfileCard';
-import UserStoryCard from './UserStoryCard';
-import { toast } from 'react-toastify';
-import { PenSquare } from 'lucide-react';
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  blogsSelector,
+  fetchBlogsAsync,
+  deleteBlogAsync,
+} from "../../Redux/reducers/blogsReducer";
+import {
+  usersSelector,
+  updateProfileAsync,
+} from "../../Redux/reducers/usersReducer";
+import ConfirmModal from "../common/ConfirmModal";
+import { ProfileSkeleton } from "../common/Skeleton";
+import AuthorProfileCard from "./AuthorProfileCard";
+import UserStoryCard from "./UserStoryCard";
+import { toast } from "react-toastify";
+import { PenSquare } from "lucide-react";
 
 const Profile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { blogs, isLoading: blogsLoading } = useSelector(blogsSelector);
-  const { signedUser, isSignIn, sessionRestored, profileLoading } = useSelector(usersSelector);
+  const { signedUser, isSignIn, sessionRestored, profileLoading } =
+    useSelector(usersSelector);
 
   const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -24,7 +32,7 @@ const Profile = () => {
 
   useEffect(() => {
     if (sessionRestored && !isSignIn) {
-      navigate('/login');
+      navigate("/login");
     }
   }, [sessionRestored, isSignIn, navigate]);
 
@@ -45,8 +53,14 @@ const Profile = () => {
   const userBlogs = blogs.filter((b) => {
     const blogUserId = b.user?._id || b.user;
     const currentUserId = signedUser._id;
-    const byId = blogUserId && currentUserId && blogUserId.toString() === currentUserId.toString();
-    const byUsername = b.user?.username && signedUser.username && b.user.username.toLowerCase() === signedUser.username.toLowerCase();
+    const byId =
+      blogUserId &&
+      currentUserId &&
+      blogUserId.toString() === currentUserId.toString();
+    const byUsername =
+      b.user?.username &&
+      signedUser.username &&
+      b.user.username.toLowerCase() === signedUser.username.toLowerCase();
     return byId || byUsername;
   });
 
@@ -57,7 +71,7 @@ const Profile = () => {
       await dispatch(deleteBlogAsync(deleteTargetId)).unwrap();
       setDeleteTargetId(null);
     } catch (err) {
-      toast.error(typeof err === 'string' ? err : 'Failed to delete story');
+      toast.error(typeof err === "string" ? err : "Failed to delete story");
     } finally {
       setIsDeleting(false);
     }
@@ -70,21 +84,26 @@ const Profile = () => {
     setImagePreview(URL.createObjectURL(file));
     // Upload immediately
     const formData = new FormData();
-    formData.append('profileImage', file);
+    formData.append("profileImage", file);
     dispatch(updateProfileAsync(formData));
   };
 
-  const profileImageSrc = imagePreview || (signedUser.profileImage ? `http://localhost:8000${signedUser.profileImage}` : null);
-  const initial = signedUser.username ? signedUser.username.charAt(0).toUpperCase() : 'A';
+  const profileImageSrc =
+    imagePreview ||
+    (signedUser.profileImage
+      ? `http://localhost:8000${signedUser.profileImage}`
+      : null);
+  const initial = signedUser.username
+    ? signedUser.username.charAt(0).toUpperCase()
+    : "A";
 
   return (
-    <div className="min-h-screen bg-zinc-50/50 py-10 px-4 sm:px-6 lg:px-8 pb-20">
+    <div className="min-h-screen px-4 py-10 pb-20 bg-zinc-50/50 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
-
         {/* Author Profile Header Card */}
         <AuthorProfileCard
-          username={signedUser.username || 'Author'}
-          email={signedUser.email || ''}
+          username={signedUser.username || "Author"}
+          email={signedUser.email || ""}
           storyCount={userBlogs.length}
           profileImage={profileImageSrc}
           initial={initial}
@@ -103,20 +122,23 @@ const Profile = () => {
 
         {/* Published Stories */}
         <div className="space-y-6">
-          <div className="flex items-center justify-between border-b border-zinc-200 pb-3">
+          <div className="flex items-center justify-between pb-3 border-b border-zinc-200">
             <h2 className="text-xl font-bold font-serif-editorial text-zinc-900">
               My Published Stories ({userBlogs.length})
             </h2>
           </div>
 
           {userBlogs.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-2xl border border-zinc-200 p-8 space-y-3">
-              <div className="w-12 h-12 rounded-full bg-zinc-100 text-zinc-400 flex items-center justify-center mx-auto text-xl">
+            <div className="p-8 py-16 space-y-3 text-center bg-white border rounded-2xl border-zinc-200">
+              <div className="flex items-center justify-center w-12 h-12 mx-auto text-xl rounded-full bg-zinc-100 text-zinc-400">
                 ✍️
               </div>
-              <h3 className="text-lg font-bold text-zinc-800 font-serif-editorial">No Stories Yet</h3>
-              <p className="text-zinc-500 text-xs max-w-sm mx-auto">
-                Share your ideas, tutorials, and engineering perspectives with the community.
+              <h3 className="text-lg font-bold text-zinc-800 font-serif-editorial">
+                No Stories Yet
+              </h3>
+              <p className="max-w-sm mx-auto text-xs text-zinc-500">
+                Share your ideas, tutorials, and engineering perspectives with
+                the community.
               </p>
               <Link
                 to="/posts/new"
