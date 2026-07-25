@@ -25,15 +25,17 @@ const Navbar = () => {
             
             {/* Brand Identity */}
             <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white flex items-center justify-center font-bold text-xs shadow-xs group-hover:bg-zinc-800 transition duration-200">
-                <BookOpen className="w-4 h-4" />
+              <div className="relative w-9 h-9 rounded-xl bg-zinc-900 text-white flex items-center justify-center font-bold shadow-md group-hover:bg-zinc-800 transition duration-300 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-tr from-zinc-950 via-zinc-900 to-zinc-800" />
+                <span className="relative z-10 font-serif-editorial text-white text-lg tracking-tighter">D</span>
+                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-blue-500 rounded-tl-md" />
               </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-xl font-bold tracking-tight text-zinc-900 font-serif-editorial">
-                  DevBlog
+              <div className="flex flex-col justify-center">
+                <span className="text-lg font-extrabold tracking-tight text-zinc-900 font-serif-editorial leading-none">
+                  DevJournal
                 </span>
-                <span className="hidden sm:inline-block text-[10px] font-bold text-zinc-400 uppercase tracking-widest border border-zinc-200 rounded px-1.5 py-0.2 bg-zinc-50">
-                  Journal
+                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mt-0.5 leading-none">
+                  Engineering &amp; Design
                 </span>
               </div>
             </Link>
