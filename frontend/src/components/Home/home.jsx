@@ -18,9 +18,11 @@ const Home = () => {
     dispatch(fetchBlogsAsync());
   }, [dispatch]);
 
+  const blogsArray = Array.isArray(blogs) ? blogs : [];
+
   const filteredBlogs = selectedCategory === "All"
-    ? blogs
-    : blogs.filter((b) => b.category?.toLowerCase() === selectedCategory.toLowerCase());
+    ? blogsArray
+    : blogsArray.filter((b) => b.category?.toLowerCase() === selectedCategory.toLowerCase());
 
   const featuredBlog = filteredBlogs.length > 0 ? filteredBlogs[0] : null;
   const secondaryBlogs = filteredBlogs.length > 1 ? filteredBlogs.slice(1) : (selectedCategory !== "All" ? filteredBlogs : []);

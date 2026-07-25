@@ -50,7 +50,8 @@ const Profile = () => {
   if (!isSignIn || !signedUser) return null;
 
   // Filter to only this author's blogs
-  const userBlogs = blogs.filter((b) => {
+  const blogsArray = Array.isArray(blogs) ? blogs : [];
+  const userBlogs = blogsArray.filter((b) => {
     const blogUserId = b.user?._id || b.user;
     const currentUserId = signedUser._id;
     const byId =
