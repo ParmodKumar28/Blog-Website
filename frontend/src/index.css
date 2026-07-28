@@ -30,6 +30,8 @@
 html,body{
   width: 100%;
   height: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -83,4 +85,23 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #a1a1aa;
+}
+
+/* Prevent overflow of code blocks, tables, images, and quotes on mobile */
+pre, code, blockquote {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
 }

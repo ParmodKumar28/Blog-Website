@@ -34,17 +34,17 @@ const Navbar = () => {
                 <span className="text-lg font-extrabold tracking-tight text-zinc-900 font-serif-editorial leading-none">
                   Blogverse
                 </span>
-                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mt-0.5 leading-none">
+                <span className="hidden sm:block text-[9px] font-bold text-zinc-400 uppercase tracking-widest mt-0.5 leading-none">
                   Your Universe of Ideas
                 </span>
               </div>
             </Link>
 
             {/* Navigation Controls */}
-            <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-1.5 sm:gap-4">
               <Link
                 to="/"
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
+                className={`px-2 py-1.5 sm:px-3 text-xs font-semibold rounded-lg transition ${
                   isActive('/')
                     ? 'bg-zinc-100 text-zinc-900'
                     : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50'
@@ -55,18 +55,19 @@ const Navbar = () => {
 
               <Link
                 to="/posts/new"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-zinc-900 text-white text-xs font-semibold rounded-lg hover:bg-zinc-800 transition shadow-xs"
+                className="inline-flex items-center gap-1.5 p-2 sm:px-3.5 sm:py-1.5 bg-zinc-900 text-white text-xs font-semibold rounded-lg hover:bg-zinc-800 transition shadow-xs"
+                title="Write Article"
               >
                 <PenSquare className="w-3.5 h-3.5" />
-                <span>Write Article</span>
+                <span className="hidden sm:inline">Write Article</span>
               </Link>
 
               {isSignIn ? (
-                <div className="flex items-center gap-2.5 pl-3 border-l border-zinc-200">
+                <div className="flex items-center gap-1.5 sm:gap-2.5 pl-1.5 sm:pl-3 border-l border-zinc-200">
                   {/* Clickable Profile Badge */}
                   <Link
                     to="/profile"
-                    className={`flex items-center gap-2 px-2.5 py-1 rounded-lg border transition ${
+                    className={`flex items-center gap-1.5 sm:gap-2 px-1.5 py-1 sm:px-2.5 rounded-lg border transition ${
                       isActive('/profile')
                         ? 'bg-zinc-900 text-white border-zinc-900 shadow-xs'
                         : 'bg-zinc-50 text-zinc-800 border-zinc-200/80 hover:bg-zinc-100'
@@ -85,7 +86,7 @@ const Navbar = () => {
 
                   <button
                     onClick={handleLogout}
-                    className="inline-flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-rose-600 px-2 py-1 rounded hover:bg-rose-50 transition"
+                    className="inline-flex items-center gap-1 text-xs font-medium text-zinc-500 hover:text-rose-600 p-1.5 sm:px-2 sm:py-1 rounded hover:bg-rose-50 transition"
                     title="Sign Out"
                   >
                     <LogOut className="w-3.5 h-3.5" />
@@ -95,7 +96,7 @@ const Navbar = () => {
               ) : (
                 <Link
                   to="/login"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 border border-zinc-300 rounded-lg text-zinc-700 hover:bg-zinc-50 transition"
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 sm:px-3.5 border border-zinc-300 rounded-lg text-zinc-700 hover:bg-zinc-50 transition"
                 >
                   <LogIn className="w-3.5 h-3.5" />
                   <span>Sign In</span>
