@@ -20,9 +20,9 @@ import blogRouter from "../src/features/blogs/routes/blog.routes.js";
 // Creating server
 const app = express();
 
-// Resolve __dirname in ES module context
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// // Resolve __dirname in ES module context
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 // Setting up cors
 const allowedOrigins = [
@@ -53,7 +53,11 @@ app.use(
 );
 
 // Security headers middleware (helps prevent common attacks like XSS, clickjacking, etc.)
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcepolicy: { policy: "cross-origin" },
+  }),
+);
 
 // Request logging middleware (helps in debugging and monitoring requests)
 app.use(morgan("dev"));
@@ -72,7 +76,14 @@ const apiLimiter = rateLimit({
 app.use(apiLimiter);
 
 // Serve uploaded profile images as static files
-app.use("/uploads", express.static(path.join(__dirname, "../../uploads")));
+app.use(
+  "/uploads",
+  express.static(path.join(process.cwd(), "uploads"), {
+    setHeaders: (res) => {
+      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    },
+  }),
+);
 
 // Cookie parser
 app.use(cookieParser());

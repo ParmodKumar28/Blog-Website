@@ -89,22 +89,27 @@ const Profile = () => {
     dispatch(updateProfileAsync(formData));
   };
 
+  const hostLink =
+    process.env.REACT_APP_BACKEND_URL || "http://localhost:8000/api";
+  const hostLinkUpdated = hostLink.replace("/api", "");
+
   const profileImageSrc =
     imagePreview ||
-    (signedUser.profileImage
-      ? `http://localhost:8000${signedUser.profileImage}`
+    (signedUser?.profileImage
+      ? `${hostLinkUpdated}${signedUser.profileImage}`
       : null);
-  const initial = signedUser.username
+  const initial = signedUser?.username
     ? signedUser.username.charAt(0).toUpperCase()
     : "A";
+
 
   return (
     <div className="min-h-screen px-4 py-10 pb-20 bg-zinc-50/50 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Author Profile Header Card */}
         <AuthorProfileCard
-          username={signedUser.username || "Author"}
-          email={signedUser.email || ""}
+          username={signedUser?.username || "Author"}
+          email={signedUser?.email || ""}
           storyCount={userBlogs.length}
           profileImage={profileImageSrc}
           initial={initial}
