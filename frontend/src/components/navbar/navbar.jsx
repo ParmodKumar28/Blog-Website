@@ -1,8 +1,14 @@
-import React from 'react';
-import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { usersSelector, logoutAsync } from '../../Redux/reducers/usersReducer';
-import { PenSquare, LogOut, LogIn } from 'lucide-react';
+import React from "react";
+import {
+  Link,
+  Outlet,
+  useNavigate,
+  useLocation,
+  ScrollRestoration,
+} from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { usersSelector, logoutAsync } from "../../Redux/reducers/usersReducer";
+import { PenSquare, LogOut, LogIn } from "lucide-react";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -12,26 +18,28 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     await dispatch(logoutAsync());
-    navigate('/login');
+    navigate("/login");
   };
 
   const isActive = (path) => location.pathname === path;
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-zinc-200/80 transition-all">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            
+      <ScrollRestoration />
+      <header className="sticky top-0 z-50 transition-all border-b bg-white/80 backdrop-blur-md border-zinc-200/80">
+        <div className="max-w-6xl px-4 mx-auto sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
             {/* Brand Identity */}
             <Link to="/" className="flex items-center gap-3 group">
-              <div className="relative w-9 h-9 rounded-xl bg-zinc-900 text-white flex items-center justify-center font-bold shadow-md group-hover:bg-zinc-800 transition duration-300 overflow-hidden">
+              <div className="relative flex items-center justify-center overflow-hidden font-bold text-white transition duration-300 shadow-md w-9 h-9 rounded-xl bg-zinc-900 group-hover:bg-zinc-800">
                 <div className="absolute inset-0 bg-gradient-to-tr from-zinc-950 via-zinc-900 to-zinc-800" />
-                <span className="relative z-10 font-serif-editorial text-white text-lg tracking-tighter">B</span>
+                <span className="relative z-10 text-lg tracking-tighter text-white font-serif-editorial">
+                  B
+                </span>
                 <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-blue-500 rounded-tl-md" />
               </div>
               <div className="flex flex-col justify-center">
-                <span className="text-lg font-extrabold tracking-tight text-zinc-900 font-serif-editorial leading-none">
+                <span className="text-lg font-extrabold leading-none tracking-tight text-zinc-900 font-serif-editorial">
                   Blogverse
                 </span>
                 <span className="hidden sm:block text-[9px] font-bold text-zinc-400 uppercase tracking-widest mt-0.5 leading-none">
@@ -45,9 +53,9 @@ const Navbar = () => {
               <Link
                 to="/"
                 className={`px-2 py-1.5 sm:px-3 text-xs font-semibold rounded-lg transition ${
-                  isActive('/')
-                    ? 'bg-zinc-100 text-zinc-900'
-                    : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50'
+                  isActive("/")
+                    ? "bg-zinc-100 text-zinc-900"
+                    : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50"
                 }`}
               >
                 Articles
@@ -68,19 +76,25 @@ const Navbar = () => {
                   <Link
                     to="/profile"
                     className={`flex items-center gap-1.5 sm:gap-2 px-1.5 py-1 sm:px-2.5 rounded-lg border transition ${
-                      isActive('/profile')
-                        ? 'bg-zinc-900 text-white border-zinc-900 shadow-xs'
-                        : 'bg-zinc-50 text-zinc-800 border-zinc-200/80 hover:bg-zinc-100'
+                      isActive("/profile")
+                        ? "bg-zinc-900 text-white border-zinc-900 shadow-xs"
+                        : "bg-zinc-50 text-zinc-800 border-zinc-200/80 hover:bg-zinc-100"
                     }`}
                     title="View Profile & Dashboard"
                   >
-                    <div className={`w-5 h-5 rounded-full font-bold flex items-center justify-center text-[10px] ${
-                      isActive('/profile') ? 'bg-white text-zinc-900' : 'bg-zinc-900 text-white'
-                    }`}>
-                      {signedUser?.username ? signedUser.username.charAt(0).toUpperCase() : 'U'}
+                    <div
+                      className={`w-5 h-5 rounded-full font-bold flex items-center justify-center text-[10px] ${
+                        isActive("/profile")
+                          ? "bg-white text-zinc-900"
+                          : "bg-zinc-900 text-white"
+                      }`}
+                    >
+                      {signedUser?.username
+                        ? signedUser.username.charAt(0).toUpperCase()
+                        : "U"}
                     </div>
-                    <span className="hidden sm:inline text-xs font-semibold">
-                      {signedUser?.username || 'Author'}
+                    <span className="hidden text-xs font-semibold sm:inline">
+                      {signedUser?.username || "Author"}
                     </span>
                   </Link>
 
@@ -103,7 +117,6 @@ const Navbar = () => {
                 </Link>
               )}
             </div>
-
           </div>
         </div>
       </header>
