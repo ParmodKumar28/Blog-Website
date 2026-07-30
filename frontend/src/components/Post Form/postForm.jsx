@@ -13,7 +13,7 @@ import FormattedContent from '../common/FormattedContent';
 import ProRichTextEditor from '../common/ProRichTextEditor';
 import StudioControlHeader from './StudioControlHeader';
 import CoverImageSelector from './CoverImageSelector';
-import { CATEGORY_IMAGE_CATALOG } from '../../utils/blogHelpers';
+import { CATEGORY_IMAGE_CATALOG } from '../../utils/blog.constants';
 
 const DEFAULT_CATEGORY = 'Tech';
 const DEFAULT_IMAGE = CATEGORY_IMAGE_CATALOG[DEFAULT_CATEGORY][0].url;
@@ -97,7 +97,7 @@ const PostForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white py-6 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen px-4 py-6 bg-white sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto space-y-6">
 
         {/* Sticky Control Header */}
@@ -113,7 +113,7 @@ const PostForm = () => {
         />
 
         {activeTab === 'edit' ? (
-          <div className="space-y-6 pt-2">
+          <div className="pt-2 space-y-6">
 
             {/* Title & Subtitle */}
             <div className="space-y-3">
@@ -122,14 +122,14 @@ const PostForm = () => {
                 placeholder="Title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full text-3xl sm:text-4xl font-bold font-serif-editorial text-zinc-900 placeholder:text-zinc-300 border-none outline-none bg-transparent"
+                className="w-full text-3xl font-bold bg-transparent border-none outline-none sm:text-4xl font-serif-editorial text-zinc-900 placeholder:text-zinc-300"
               />
               <input
                 type="text"
                 placeholder="Subtitle or short overview..."
                 value={subtitle}
                 onChange={(e) => setSubtitle(e.target.value)}
-                className="w-full text-lg font-serif-editorial italic text-zinc-600 placeholder:text-zinc-300 border-none outline-none bg-transparent"
+                className="w-full text-lg italic bg-transparent border-none outline-none font-serif-editorial text-zinc-600 placeholder:text-zinc-300"
               />
             </div>
 
@@ -143,7 +143,7 @@ const PostForm = () => {
 
             {/* WYSIWYG Rich Text Editor */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider">
+              <label className="block text-xs font-bold tracking-wider uppercase text-zinc-700">
                 Article Content
               </label>
               <ProRichTextEditor
@@ -155,10 +155,10 @@ const PostForm = () => {
           </div>
         ) : (
           /* Preview Mode */
-          <div className="space-y-6 pt-4">
+          <div className="pt-4 space-y-6">
             {imageUrl && (
-              <div className="w-full h-64 sm:h-80 rounded-xl overflow-hidden bg-zinc-100 border border-zinc-200">
-                <img src={imageUrl} alt={title || 'Preview'} className="w-full h-full object-cover" />
+              <div className="w-full h-64 overflow-hidden border sm:h-80 rounded-xl bg-zinc-100 border-zinc-200">
+                <img src={imageUrl} alt={title || 'Preview'} className="object-cover w-full h-full" />
               </div>
             )}
             <div className="space-y-4">
@@ -166,17 +166,17 @@ const PostForm = () => {
                 <span className="tag-pill">{category}</span>
                 <span className="text-xs text-zinc-400">{estimatedReadTime}</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-bold font-serif-editorial text-zinc-900">
+              <h1 className="text-3xl font-bold sm:text-4xl font-serif-editorial text-zinc-900">
                 {title || 'Untitled Article'}
               </h1>
               {subtitle && (
-                <p className="text-lg font-serif-editorial italic text-zinc-600">{subtitle}</p>
+                <p className="text-lg italic font-serif-editorial text-zinc-600">{subtitle}</p>
               )}
-              <hr className="border-zinc-200 my-4" />
+              <hr className="my-4 border-zinc-200" />
               {plainText ? (
                 <FormattedContent content={content} />
               ) : (
-                <p className="text-zinc-400 font-serif-editorial italic">
+                <p className="italic text-zinc-400 font-serif-editorial">
                   Start writing in the Write tab to preview your article.
                 </p>
               )}

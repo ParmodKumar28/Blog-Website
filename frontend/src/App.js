@@ -1,13 +1,10 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Provider, useDispatch } from "react-redux";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
-import store from "./Redux/store";
-import Navbar from "./components/navbar/navbar";
-import ProtectedRoute from "./components/Protected Routes/ProtectedRoute";
 import { fetchCurrentUserAsync } from "./Redux/reducers/usersReducer";
+import store from "./Redux/store";
+import "react-toastify/dist/ReactToastify.css";
 
 // Route component imports
 import Home from "./components/Home/home";
@@ -17,6 +14,8 @@ import PostForm from "./components/Post Form/postForm";
 import PostDetail from "./components/Post/post";
 import Profile from "./components/profile/profile";
 import Page404 from "./components/Page 404/Page404";
+import Navbar from "./components/navbar/navbar";
+import ProtectedRoute from "./components/Protected Routes/ProtectedRoute";
 
 // Router configuration
 const router = createBrowserRouter([
@@ -30,28 +29,38 @@ const router = createBrowserRouter([
       { path: "/signup", element: <Signup /> },
       {
         path: "/posts/new",
-        element: <ProtectedRoute><PostForm /></ProtectedRoute>,
+        element: (
+          <ProtectedRoute>
+            <PostForm />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/posts/:id/edit",
-        element: <ProtectedRoute><PostForm /></ProtectedRoute>,
+        element: (
+          <ProtectedRoute>
+            <PostForm />
+          </ProtectedRoute>
+        ),
       },
       { path: "/posts/:id", element: <PostDetail /> },
       {
         path: "/profile",
-        element: <ProtectedRoute><Profile /></ProtectedRoute>,
+        element: (
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
 ]);
 
-// Inner component that has access to Redux dispatch
 const AppContent = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
     // On every app load, silently call /me to restore session from httpOnly cookie.
-    // This is the industry-standard approach — no localStorage needed.
     dispatch(fetchCurrentUserAsync());
   }, [dispatch]);
 
